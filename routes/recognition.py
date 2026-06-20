@@ -71,8 +71,8 @@ def upload_face(student_id):
             return jsonify({'error': 'Multiple faces detected. Only one person should be in the frame.'}), 400
 
         laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
-        #if laplacian_var < 100:
-        #    return jsonify({'error': 'Image is too blurry. Please stay still.'}), 400
+        if laplacian_var < 100:
+            return jsonify({'error': 'Image is too blurry. Please stay still.'}), 400
 
         if student.face_image_count() >= current_app.config['FACE_CAPTURE_TARGET']:
             return jsonify({'error': 'MAXIMUM IMAGES REACHED.'}), 400
