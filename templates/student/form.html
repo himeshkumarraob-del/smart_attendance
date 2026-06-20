@@ -1,0 +1,42 @@
+{% extends 'layouts/dashboard.html' %}
+{% block page_title %}{% if student %}Edit Student{% else %}Add Student{% endif %} | Smart Attendance AI{% endblock %}
+{% block header %}{% if student %}Edit Student{% else %}Add Student{% endif %}{% endblock %}
+{% block subheader %}Maintain student enrollment records{% endblock %}
+
+{% block content %}
+<form method="post" class="max-w-xl bg-white rounded-xl border border-slate-200 p-6 shadow-sm space-y-4">
+  {% if student %}
+    <div>
+      <label class="block text-sm font-medium mb-1">Student ID</label>
+      <input type="text" value="{{ student.student_id }}" disabled class="w-full rounded-lg border-slate-200 bg-slate-50">
+    </div>
+  {% else %}
+    <div>
+      <label class="block text-sm font-medium mb-1" for="student_id">Student ID</label>
+      <input id="student_id" name="student_id" type="text" required class="w-full rounded-lg border-slate-300">
+    </div>
+  {% endif %}
+
+  <div>
+    <label class="block text-sm font-medium mb-1" for="name">Full Name</label>
+    <input id="name" name="name" type="text" required value="{{ student.name if student else '' }}" class="w-full rounded-lg border-slate-300">
+  </div>
+  <div>
+    <label class="block text-sm font-medium mb-1" for="roll_number">Roll Number</label>
+    <input id="roll_number" name="roll_number" type="text" required value="{{ student.roll_number if student else '' }}" class="w-full rounded-lg border-slate-300">
+  </div>
+  <div>
+    <label class="block text-sm font-medium mb-1" for="department">Department</label>
+    <input id="department" name="department" type="text" value="{{ student.department if student and student.department else '' }}" class="w-full rounded-lg border-slate-300">
+  </div>
+  <div>
+    <label class="block text-sm font-medium mb-1" for="email">Email</label>
+    <input id="email" name="email" type="email" value="{{ student.email if student and student.email else '' }}" class="w-full rounded-lg border-slate-300">
+  </div>
+
+  <div class="flex gap-3 pt-2">
+    <button type="submit" class="px-5 py-2 bg-blue-600 text-white rounded-lg font-medium">Save</button>
+    <a href="{{ url_for('student.list_students') }}" class="px-5 py-2 border border-slate-200 rounded-lg">Cancel</a>
+  </div>
+</form>
+{% endblock %}

@@ -1,0 +1,75 @@
+from flask import Blueprint, render_template, request, jsonify, send_file
+from flask_login import login_required
+from ..models import Student, Attendance, db
+from sqlalchemy import func, extract
+import pandas as pd
+import io
+from datetime import datetime, timedelta
+
+analytics_bp = Blueprint('analytics', __name__)
+
+@analytics_bp.route('/dashboard_data')
+@login_required
+def dashboard_data():
+    # 1. Attendance Trends (Last 30 Days)
+    end_date = datetime.utcnow().date()
+    start_date = end_date - timedelta(days=29)
+    
+    trends = db.session.query(
+        Attendance.attendance_date,
+        func.count(Attendance.id)
+    ).filter(Attendance.attendance_date >= start_date)\
+     .group_by(Attendance.attendance_date)\
+     .order_by(Attendance.attendance_date).all()
+    
+    # 2. Department-wise Attendance
+    dept_stats = db.session.query(
+        Student.department,
+        func.count(Attendance.id)
+    ).join(Attendance, Student.id == Attendance.student_id_ref)\
+     .group_by(Student.department).all()
+
+    # 3. Student Ranking (Top Attendees)
+    rankings = db.session.query(
+        Student.name,
+        func.count(Attendance.id).label('total')
+    ).join(Attendance, Student.id == Attendance.student_id_ref)\
+     .group_by(Student.id)\
+     .order_by(func.count(Attendance.id).desc())\
+     .limit(10).all()
+
+    return jsonify({
+        'trends': [{'date': str(d), 'count': c} for d, c in trends],
+        'departments': [{'name': n, 'count': c} for n, c in dept_stats],
+        'rankings': [{'name': n, 'count': c} for n, c in rankings]
+    })
+
+@analytics_bp.route('/export/<format>')
+@login_required
+def export_attendance(format):
+    # Fetch all records with student details
+    query = db.session.query(
+        Attendance.attendance_date,
+        Attendance.attendance_time,
+        Student.name,
+        Student.roll_number,
+        Student.department,
+        Attendance.status
+    ).join(Student, Attendance.student_id_ref == Student.id).all()
+
+    df = pd.DataFrame(query, columns=['Date', 'Time', 'Name', 'Roll Number', 'Department', 'Status'])
+    
+    output = io.BytesIO()
+    
+    if format == 'csv':
+        df.to_csv(output, index=False)
+        output.seek(0)
+        return send_file(output, mimetype='text/csv', as_attachment=True, download_name='attendance_report.csv')
+    
+    elif format == 'excel':
+        with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+            df.to_excel(writer, index=False, sheet_name='Attendance')
+        output.seek(0)
+        return send_file(output, mimetype='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', as_attachment=True, download_name='attendance_report.xlsx')
+
+    return jsonify({'error': 'Invalid format'}), 400

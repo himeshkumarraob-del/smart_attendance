@@ -1,0 +1,87 @@
+from flask import Blueprint, render_template, request, jsonify, current_app
+from flask_login import login_required
+from ..models import Student, Attendance, ActivityLog, db
+from ..services.face_engine import FaceEngine
+import cv2
+import numpy as np
+import base64
+from datetime import datetime
+
+recognition_bp = Blueprint('recognition', __name__)
+face_engine = FaceEngine()
+
+@recognition_bp.route('/live_feed')
+@login_required
+def live_feed():
+    return render_template('recognition/live_feed.html')
+
+@recognition_bp.route('/process_frame', methods=['POST'])
+@login_required
+def process_frame():
+    data = request.json
+    image_data = data.get('image')
+    
+    if not image_data:
+        return jsonify({'error': 'No image data'}), 400
+        
+    try:
+        # Decode image
+        header, encoded = image_data.split(",", 1)
+        data_bytes = base64.b64decode(encoded)
+        nparr = np.frombuffer(data_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+        
+        # Recognize faces
+        matches = face_engine.recognize_face(img)
+        
+        response_data = []
+        for match in matches:
+            student_info = None
+            if match['student_id']:
+                student = Student.query.get(match['student_id'])
+                if student:
+                    student_info = {
+                        'name': student.name,
+                        'roll': student.roll_number,
+                        'dept': student.department,
+                        'id': student.id
+                    }
+                    
+                    # 4. Attendance Logic: Prevent duplicates for the day
+                    today = datetime.utcnow().date()
+                    existing_attendance = Attendance.query.filter_by(
+                        student_id_ref=student.id,
+                        attendance_date=today
+                    ).first()
+                    
+                    if not existing_attendance and match['confidence'] > 70:
+                        new_attendance = Attendance(
+                            student_id_ref=student.id,
+                            attendance_date=today,
+                            attendance_time=datetime.utcnow().time(),
+                            confidence_score=match['confidence']
+                        )
+                        db.session.add(new_attendance)
+                        
+                        log = ActivityLog(action=f"Attendance marked for: {student.name} ({match['confidence']}%)")
+                        db.session.add(log)
+                        db.session.commit()
+                        student_info['attendance_marked'] = True
+            
+            response_data.append({
+                'location': match['location'],
+                'student': student_info,
+                'confidence': match['confidence'],
+                'unknown': match['unknown']
+            })
+            
+        return jsonify({'results': response_data})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@recognition_bp.route('/retrain', methods=['POST'])
+@login_required
+def retrain():
+    count = face_engine.train_all_faces()
+    return jsonify({'success': True, 'count': count})

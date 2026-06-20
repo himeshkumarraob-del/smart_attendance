@@ -1,0 +1,64 @@
+{% extends 'layouts/dashboard.html' %}
+{% block page_title %}Analytics | Smart Attendance AI{% endblock %}
+{% block header %}Analytics & Reports{% endblock %}
+{% block subheader %}Trends, rankings, and exportable attendance data{% endblock %}
+
+{% block head %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Total Students</p>
+    <p id="summaryStudents" class="text-2xl font-bold">-</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Present Today</p>
+    <p id="summaryPresent" class="text-2xl font-bold text-emerald-600">-</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Attendance Rate</p>
+    <p id="summaryRate" class="text-2xl font-bold text-blue-600">-</p>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <h3 class="font-semibold mb-4">Attendance Trends (30 days)</h3>
+    <div class="h-64"><canvas id="trendChart"></canvas></div>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <h3 class="font-semibold mb-4">Department Attendance</h3>
+    <div class="h-64"><canvas id="deptChart"></canvas></div>
+  </div>
+</div>
+
+<div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm mb-6">
+  <h3 class="font-semibold mb-4">Top Attendees</h3>
+  <div class="overflow-x-auto">
+    <table class="min-w-full text-sm">
+      <thead>
+        <tr class="text-left text-slate-500 border-b">
+          <th class="py-2 pr-4">Rank</th>
+          <th class="py-2 pr-4">Name</th>
+          <th class="py-2">Total Days Present</th>
+        </tr>
+      </thead>
+      <tbody id="rankingsBody"></tbody>
+    </table>
+  </div>
+</div>
+
+<div class="flex flex-col sm:flex-row gap-3">
+  <a href="{{ url_for('analytics.export_attendance', format='csv') }}" class="flex-1 text-center py-3 border border-slate-200 rounded-lg font-medium hover:bg-slate-50">Export CSV</a>
+  <a href="{{ url_for('analytics.export_attendance', format='excel') }}" class="flex-1 text-center py-3 bg-slate-900 text-white rounded-lg font-medium hover:bg-blue-700">Export Excel</a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.ANALYTICS = { dataUrl: "{{ url_for('analytics.dashboard_data') }}" };
+</script>
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

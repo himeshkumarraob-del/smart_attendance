@@ -1,0 +1,424 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Attendance AI - Face Recognition</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        @keyframes scan {
+            0% { transform: translateY(0); opacity: 0.2; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100%); opacity: 0.2; }
+        }
+        .scan-line {
+            animation: scan 2s linear infinite;
+        }
+        @keyframes radar-spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .radar-sweep {
+            background: conic-gradient(from 0deg, transparent 70%, rgba(33, 112, 228, 0.4) 100%);
+            border-radius: 50%;
+            animation: radar-spin 3s linear infinite;
+        }
+        .hud-corner {
+            width: 24px;
+            height: 24px;
+            border-color: #2170e4;
+        }
+        .shimmer {
+            background: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(255,255,255,0.2) 50%, rgba(255,255,255,0) 100%);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
+        }
+        @keyframes pop-up {
+            0% { transform: translateY(20px); opacity: 0; }
+            100% { transform: translateY(0); opacity: 1; }
+        }
+        .animate-pop-up {
+            animation: pop-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+    </style>
+<script id="tailwind-config">
+  tailwind.config = {
+    darkMode: "class",
+    theme: {
+      extend: {
+        "colors": {
+                "tertiary-fixed-dim": "#dec29a",
+                "primary": "#000000",
+                "on-surface-variant": "#45464d",
+                "on-error": "#ffffff",
+                "tertiary": "#000000",
+                "tertiary-container": "#271901",
+                "inverse-on-surface": "#f3f0f2",
+                "surface-container-high": "#eae7e9",
+                "surface": "#fcf8fa",
+                "primary-fixed-dim": "#bec6e0",
+                "on-surface": "#1b1b1d",
+                "on-tertiary-fixed-variant": "#574425",
+                "on-tertiary-container": "#98805d",
+                "surface-container": "#f0edef",
+                "on-primary-fixed-variant": "#3f465c",
+                "outline": "#76777d",
+                "on-background": "#1b1b1d",
+                "secondary-fixed-dim": "#adc6ff",
+                "primary-container": "#131b2e",
+                "on-tertiary": "#ffffff",
+                "on-secondary-container": "#fefcff",
+                "background": "#fcf8fa",
+                "error": "#ba1a1a",
+                "on-secondary-fixed": "#001a42",
+                "secondary-container": "#2170e4",
+                "error-container": "#ffdad6",
+                "on-secondary": "#ffffff",
+                "inverse-primary": "#bec6e0",
+                "on-tertiary-fixed": "#271901",
+                "surface-container-lowest": "#ffffff",
+                "surface-tint": "#565e74",
+                "on-primary-container": "#7c839b",
+                "on-primary": "#ffffff",
+                "secondary": "#0058be",
+                "outline-variant": "#c6c6cd",
+                "on-primary-fixed": "#131b2e",
+                "surface-container-highest": "#e4e2e4",
+                "primary-fixed": "#dae2fd",
+                "inverse-surface": "#303032",
+                "on-secondary-fixed-variant": "#004395",
+                "surface-variant": "#e4e2e4",
+                "on-error-container": "#93000a",
+                "tertiary-fixed": "#fcdeb5",
+                "surface-dim": "#dcd9db",
+                "surface-bright": "#fcf8fa",
+                "surface-container-low": "#f6f3f5",
+                "secondary-fixed": "#d8e2ff"
+        },
+        "borderRadius": {
+                "DEFAULT": "0.125rem",
+                "lg": "0.25rem",
+                "xl": "0.5rem",
+                "full": "0.75rem"
+        },
+        "spacing": {
+                "md": "16px",
+                "container-max": "1440px",
+                "xl": "32px",
+                "sm": "8px",
+                "sidebar-width": "280px",
+                "xs": "4px",
+                "lg": "24px",
+                "base": "4px"
+        },
+        "fontFamily": {
+                "body-sm": [
+                        "Inter"
+                ],
+                "body-md": [
+                        "Inter"
+                ],
+                "label-md": [
+                        "Inter"
+                ],
+                "headline-lg-mobile": [
+                        "Inter"
+                ],
+                "headline-md": [
+                        "Inter"
+                ],
+                "data-tabular": [
+                        "Inter"
+                ],
+                "headline-lg": [
+                        "Inter"
+                ]
+        },
+        "fontSize": {
+                "body-sm": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "body-md": [
+                        "16px",
+                        {
+                                "lineHeight": "24px",
+                                "fontWeight": "400"
+                        }
+                ],
+                "label-md": [
+                        "12px",
+                        {
+                                "lineHeight": "16px",
+                                "letterSpacing": "0.05em",
+                                "fontWeight": "600"
+                        }
+                ],
+                "headline-lg-mobile": [
+                        "24px",
+                        {
+                                "lineHeight": "32px",
+                                "letterSpacing": "-0.01em",
+                                "fontWeight": "700"
+                        }
+                ],
+                "headline-md": [
+                        "20px",
+                        {
+                                "lineHeight": "28px",
+                                "fontWeight": "600"
+                        }
+                ],
+                "data-tabular": [
+                        "14px",
+                        {
+                                "lineHeight": "20px",
+                                "fontWeight": "500"
+                        }
+                ],
+                "headline-lg": [
+                        "30px",
+                        {
+                                "lineHeight": "38px",
+                                "letterSpacing": "-0.02em",
+                                "fontWeight": "700"
+                        }
+                ]
+        }
+},
+    },
+  }
+</script>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+</head>
+<body class="bg-background text-on-background font-body-md min-h-screen flex overflow-hidden">
+<!-- NavigationDrawer (Shared Component Logic) -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-primary dark:bg-primary-container text-secondary-fixed dark:text-secondary-fixed-dim border-r border-outline-variant dark:border-outline shadow-sm flex flex-col z-50">
+<div class="px-lg py-xl">
+<h1 class="font-headline-md text-headline-md font-bold text-on-primary-container dark:text-primary-fixed mb-xl">Smart Attendance</h1>
+<div class="flex items-center gap-md mb-xl p-md bg-surface-container-highest/10 rounded-lg">
+<div class="w-10 h-10 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold">
+                    AU
+                </div>
+<div>
+<p class="font-label-md text-label-md text-secondary-fixed">Admin User</p>
+<p class="text-[10px] opacity-70">System Administrator</p>
+</div>
+</div>
+<nav class="space-y-sm">
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">group</span>
+<span class="font-label-md text-label-md">Students</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md border-l-4 border-secondary-container bg-surface-container-highest/10 text-on-secondary-fixed transition-colors active:scale-95 duration-150 rounded-r-lg" href="#">
+<span class="material-symbols-outlined">face</span>
+<span class="font-label-md text-label-md">Face Registration</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">event_available</span>
+<span class="font-label-md text-label-md">Attendance</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150 rounded-lg" href="#">
+<span class="material-symbols-outlined">assessment</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</nav>
+</div>
+<div class="mt-auto p-lg border-t border-outline-variant/20">
+<div class="flex items-center gap-sm text-label-md opacity-60">
+<span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                System Online
+            </div>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 ml-sidebar-width flex flex-col relative min-h-screen">
+<!-- TopAppBar (Shared Component Logic) -->
+<header class="flex justify-between items-center px-lg py-md w-full sticky top-0 z-40 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-md">
+<button class="material-symbols-outlined text-primary dark:text-primary-fixed hover:bg-surface-container-low transition-all p-sm rounded-full">menu</button>
+<h2 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Face Recognition</h2>
+</div>
+<div class="flex items-center gap-lg">
+<div class="hidden md:flex flex-col items-end">
+<span class="text-label-md font-semibold text-secondary">Terminal ID: 08A-FAC</span>
+<span class="text-[10px] text-outline uppercase tracking-wider">High Security Mode</span>
+</div>
+<button class="material-symbols-outlined text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-low transition-all p-sm rounded-full">notifications</button>
+</div>
+</header>
+<!-- Recognition Interface -->
+<div class="flex-1 p-lg flex flex-col gap-lg bg-surface-container-low overflow-hidden">
+<!-- Camera Viewport Section -->
+<div class="flex-1 relative bg-black rounded-xl overflow-hidden shadow-xl border border-outline-variant/30">
+<!-- Video Stream Placeholder -->
+<div class="absolute inset-0 w-full h-full flex items-center justify-center">
+<img class="w-full h-full object-cover opacity-80" data-alt="A professional security camera point-of-view of a modern university hallway with soft cinematic lighting. A college student is centered in the frame, facing the camera with a neutral expression. The background is slightly blurred with minimalist architectural lines. High-contrast lighting highlights the facial features for biometrics. The overall aesthetic is clean, corporate, and highly technological." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBllDh0D7Bc4KlSPKt9whorDaGLBBuRwl9yxoldPI_sjqVxkG-tPko3ZMEiYFIg2-6Kg75WFOGKtSsPU9y5OMx1vsa5UyVslFuOr-H_IJefZGR8DIriP2JnwF_cjay7nFxlfPGUTV7ImYFZEtjutFNFgCKEUmLT27oV4Kx9Sn2zCzKexUjlIAq-sAqiQpEyazek-bd5Q7rGcbwju92FjVHdQEbZfvg_wtyufbtIU-rTn2HVFbMcq2dsBGOm-xB6eoxhGXWgoq2fsg9a"/>
+</div>
+<!-- Radar Effect -->
+<div class="absolute inset-0 pointer-events-none flex items-center justify-center overflow-hidden mix-blend-screen opacity-30">
+<div class="w-[800px] h-[800px] absolute radar-sweep rounded-full"></div>
+<div class="w-[800px] h-[800px] absolute border border-secondary-container/50 rounded-full"></div>
+<div class="w-[600px] h-[600px] absolute border border-secondary-container/40 rounded-full"></div>
+<div class="w-[400px] h-[400px] absolute border border-secondary-container/30 rounded-full"></div>
+</div>
+<!-- HUD Overlays -->
+<div class="absolute inset-0 pointer-events-none p-xl">
+<!-- HUD Corners -->
+<div class="absolute top-md left-md border-t-4 border-l-4 hud-corner rounded-tl-lg"></div>
+<div class="absolute top-md right-md border-t-4 border-r-4 hud-corner rounded-tr-lg"></div>
+<div class="absolute bottom-md left-md border-b-4 border-l-4 hud-corner rounded-bl-lg"></div>
+<div class="absolute bottom-md right-md border-b-4 border-r-4 hud-corner rounded-br-lg"></div>
+<!-- Scanning Rect -->
+<div class="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[320px] h-[420px] border-2 border-secondary-container/50 flex flex-col justify-between overflow-hidden backdrop-blur-[2px]">
+<div class="h-[2px] bg-secondary-container/80 shadow-[0_0_15px_rgba(33,112,228,0.8)] scan-line w-full"></div>
+<div class="absolute inset-0 border-[20px] border-black/20"></div>
+<!-- Dynamic Point Trackers -->
+<div class="absolute inset-0 grid grid-cols-4 grid-rows-6 opacity-30">
+<div class="border border-white/10"></div><div class="border border-white/10"></div><div class="border border-white/10"></div><div class="border border-white/10"></div>
+<div class="border border-white/10"></div><div class="border border-white/10"></div><div class="border border-white/10"></div><div class="border border-white/10"></div>
+<div class="border border-white/10"></div><div class="border border-white/10"></div><div class="border border-white/10"></div><div class="border border-white/10"></div>
+</div>
+</div>
+<!-- Bounding Box -->
+<div class="absolute left-1/2 top-[40%] -translate-x-1/2 -translate-y-1/2 w-[160px] h-[190px] border border-emerald-500/80 rounded-md animate-pulse">
+<div class="absolute -top-1 -left-1 w-3 h-3 border-t-2 border-l-2 border-emerald-500"></div>
+<div class="absolute -top-1 -right-1 w-3 h-3 border-t-2 border-r-2 border-emerald-500"></div>
+<div class="absolute -bottom-1 -left-1 w-3 h-3 border-b-2 border-l-2 border-emerald-500"></div>
+<div class="absolute -bottom-1 -right-1 w-3 h-3 border-b-2 border-r-2 border-emerald-500"></div>
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-emerald-500/90 text-white font-mono text-[9px] px-2 py-0.5 rounded backdrop-blur-sm whitespace-nowrap">
+        MATCH: 98.4%
+    </div>
+</div>
+<!-- HUD Metadata -->
+<div class="absolute top-lg right-lg text-right flex flex-col gap-sm">
+<div class="bg-black/60 backdrop-blur-md px-md py-sm rounded-lg border border-white/10">
+<p class="text-white font-label-md text-[10px] opacity-70">FPS: 60.0</p>
+<p class="text-white font-label-md text-[10px] opacity-70">LATENCY: 12ms</p>
+</div>
+<div class="bg-black/60 backdrop-blur-md px-md py-sm rounded-lg border border-white/10">
+<p class="text-white font-label-md text-[10px] opacity-70 uppercase tracking-widest">Scanning State</p>
+<p class="text-emerald-400 font-bold text-label-md">VERIFIED</p>
+</div>
+</div>
+<div class="absolute bottom-lg left-lg">
+<div class="bg-black/60 backdrop-blur-md px-md py-md rounded-lg border border-emerald-500/50 flex items-center gap-md">
+<div class="w-8 h-8 rounded-full bg-emerald-500/20 flex items-center justify-center text-emerald-400">
+<span class="material-symbols-outlined text-xl">check_circle</span>
+</div>
+<div>
+<p class="text-white font-headline-md text-label-md">Identity Confirmed</p>
+<p class="text-emerald-400/80 text-[10px]">Access Granted to Facility</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Recognition Panel -->
+<div class="h-auto bg-surface border border-outline-variant rounded-xl shadow-lg p-lg grid grid-cols-1 md:grid-cols-12 gap-lg items-center relative z-10 animate-pop-up">
+<!-- Student Avatar -->
+<div class="md:col-span-2 flex justify-center">
+<div class="relative">
+<div class="w-24 h-24 rounded-full border-4 border-emerald-500 overflow-hidden shadow-md">
+<img class="w-full h-full object-cover" data-alt="A close-up professional profile portrait of a smiling young male student with dark hair and glasses. The lighting is warm and clear, resembling a high-quality ID badge photo. The background is a soft blue gradient. The image is framed as a biometric identification success." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAT7F939e2qqnLIi2OdpYGiZrGdiQx_24vgyVT3eKAuIcq4j_7YPUW5Ggw1hyNrks8flCR_u6WCYA7y1ao-gDf7thjO6ognAvMzGbu43stQh-URJC-S9h89f73oAfHAyGJNALvXr7qwlqH7xWWKwPDAAbh5SsKIj3crmVZpgSfURzNzYsOWyHQNPAkqFd0IqXx9M-zsyjJp_fj1w8YdwMD9BiN7lqvpuZqnHYoG-rAboqAZMAJ4vhg_Wh0ZnhqqBHbQ-YR74u-OKDJe"/>
+</div>
+<div class="absolute -bottom-1 -right-1 bg-emerald-500 text-white p-1 rounded-full border-2 border-surface shadow-sm">
+<span class="material-symbols-outlined text-sm font-bold">check</span>
+</div>
+</div>
+</div>
+<!-- Identity Info -->
+<div class="md:col-span-4 space-y-xs">
+<p class="text-outline font-label-md uppercase tracking-widest text-[10px]">Recognized Student</p>
+<h3 class="font-headline-md text-headline-md text-primary">Marcus Holloway</h3>
+<p class="text-on-surface-variant font-body-sm">Student ID: <span class="font-mono">#ST-2024-9981</span></p>
+<div class="flex items-center gap-sm mt-md">
+<div class="px-md py-xs bg-emerald-500/10 text-emerald-600 rounded-full flex items-center gap-sm">
+<span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.8)]"></span>
+<span class="font-label-md text-label-md">Attendance Marked</span>
+</div>
+</div>
+</div>
+<!-- Confidence & Stats -->
+<div class="md:col-span-3 border-l border-outline-variant/30 pl-lg flex flex-col justify-center gap-md">
+<div>
+<div class="flex justify-between items-end mb-xs">
+<span class="text-[11px] text-outline font-semibold">CONFIDENCE SCORE</span>
+<span class="text-emerald-600 font-bold">98.4%</span>
+</div>
+<div class="h-2 w-full bg-surface-container rounded-full overflow-hidden">
+<div class="h-full bg-emerald-500 shimmer" style="width: 98.4%"></div>
+</div>
+</div>
+<div class="flex items-center gap-md">
+<div class="text-center">
+<p class="text-[10px] text-outline uppercase">Arrival</p>
+<p class="font-bold text-label-md">08:42 AM</p>
+</div>
+<div class="w-[1px] h-8 bg-outline-variant"></div>
+<div class="text-center">
+<p class="text-[10px] text-outline uppercase">Course</p>
+<p class="font-bold text-label-md">CS-402</p>
+</div>
+</div>
+</div>
+<!-- Actions -->
+<div class="md:col-span-3 flex flex-col gap-sm">
+<button class="w-full py-md bg-secondary text-white rounded-lg font-label-md text-label-md flex items-center justify-center gap-sm hover:brightness-110 active:scale-[0.98] transition-all">
+<span class="material-symbols-outlined text-md">refresh</span>
+                        Retry Scan
+                    </button>
+<button class="w-full py-md bg-surface-container-high text-on-surface-variant rounded-lg font-label-md text-label-md flex items-center justify-center gap-sm hover:bg-surface-container-highest active:scale-[0.98] transition-all border border-outline-variant">
+<span class="material-symbols-outlined text-md">keyboard</span>
+                        Manual Entry
+                    </button>
+</div>
+</div>
+</div>
+</main>
+<!-- Micro-interaction Scripts -->
+<script>
+        // Subtle interaction for buttons
+        document.querySelectorAll('button').forEach(button => {
+            button.addEventListener('mousedown', () => {
+                button.style.transform = 'scale(0.97)';
+            });
+            button.addEventListener('mouseup', () => {
+                button.style.transform = 'scale(1)';
+            });
+            button.addEventListener('mouseleave', () => {
+                button.style.transform = 'scale(1)';
+            });
+        });
+
+        // Mock Scanning State Toggle
+        let isScanning = true;
+        setInterval(() => {
+            const statusLabel = document.querySelector('.text-emerald-400.font-bold');
+            if (statusLabel && isScanning) {
+                // statusLabel.classList.toggle('opacity-50');
+            }
+        }, 1000);
+    </script>
+</body></html>

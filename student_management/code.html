@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Student Management | Smart Attendance AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-primary-fixed-variant": "#3f465c",
+                      "on-error-container": "#93000a",
+                      "on-background": "#1b1b1d",
+                      "primary-fixed-dim": "#bec6e0",
+                      "inverse-on-surface": "#f3f0f2",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error": "#ffffff",
+                      "error": "#ba1a1a",
+                      "surface-container": "#f0edef",
+                      "on-secondary-fixed-variant": "#004395",
+                      "surface-dim": "#dcd9db",
+                      "surface": "#fcf8fa",
+                      "on-primary": "#ffffff",
+                      "secondary": "#0058be",
+                      "inverse-primary": "#bec6e0",
+                      "surface-bright": "#fcf8fa",
+                      "tertiary-container": "#271901",
+                      "outline-variant": "#c6c6cd",
+                      "primary-fixed": "#dae2fd",
+                      "surface-container-highest": "#e4e2e4",
+                      "primary": "#000000",
+                      "on-tertiary": "#ffffff",
+                      "secondary-container": "#2170e4",
+                      "error-container": "#ffdad6",
+                      "on-secondary-fixed": "#001a42",
+                      "on-primary-container": "#7c839b",
+                      "inverse-surface": "#303032",
+                      "primary-container": "#131b2e",
+                      "background": "#fcf8fa",
+                      "tertiary-fixed": "#fcdeb5",
+                      "surface-container-low": "#f6f3f5",
+                      "secondary-fixed": "#d8e2ff",
+                      "on-secondary-container": "#fefcff",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "surface-container-high": "#eae7e9",
+                      "surface-tint": "#565e74",
+                      "on-tertiary-container": "#98805d",
+                      "on-secondary": "#ffffff",
+                      "on-surface": "#1b1b1d",
+                      "secondary-fixed-dim": "#adc6ff",
+                      "on-tertiary-fixed": "#271901",
+                      "outline": "#76777d",
+                      "on-surface-variant": "#45464d",
+                      "on-primary-fixed": "#131b2e",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "tertiary": "#000000",
+                      "surface-variant": "#e4e2e4"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "md": "16px",
+                      "container-max": "1440px",
+                      "sm": "8px",
+                      "xl": "32px",
+                      "lg": "24px",
+                      "sidebar-width": "280px",
+                      "base": "4px",
+                      "xs": "4px"
+              },
+              "fontFamily": {
+                      "body-md": ["Inter"],
+                      "headline-lg": ["Inter"],
+                      "body-sm": ["Inter"],
+                      "label-md": ["Inter"],
+                      "data-tabular": ["Inter"],
+                      "headline-lg-mobile": ["Inter"],
+                      "headline-md": ["Inter"]
+              },
+              "fontSize": {
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                      "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                      "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                      "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                      "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+              }
+            },
+          },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .active-tab-indicator {
+            position: absolute;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background-color: #2170e4;
+        }
+        .bento-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background font-body-md overflow-x-hidden">
+<!-- Navigation Drawer -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-primary border-r border-outline-variant shadow-sm flex flex-col z-50 overflow-y-auto">
+<div class="px-lg py-xl">
+<h1 class="font-headline-md text-headline-md text-on-primary-container font-bold">Smart Attendance</h1>
+</div>
+<nav class="flex-1">
+<div class="space-y-1">
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<a class="relative flex items-center gap-md px-lg py-md border-l-4 border-secondary-container bg-surface-container-highest/10 text-on-secondary-fixed transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md">Students</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="font-label-md text-label-md">Face Registration</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-md text-label-md">Attendance</span>
+</a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 active:scale-95" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-md text-label-md">Reports</span>
+</a>
+</div>
+</nav>
+<div class="mt-auto p-lg border-t border-outline-variant/30">
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full overflow-hidden bg-secondary-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio portrait of a corporate system administrator in a clean white office setting. The lighting is soft and neutral, creating a bright light-mode aesthetic that fits a modern enterprise application. The administrator is looking friendly and composed, wearing a professional navy blue shirt against a minimalist gray background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCpMU7hQoUrBHQHG7iQVlN1KhqBcCLxs5OsPEpk8-01cnMZh_0IGoty26w_drqzrZX3vWWVSqdhlsnG61P2NZe2NEQlZA0RR976HwzhKBhhjlmlEI9XsjXli2btjbndrUbG4XFgCua35bvT59-ZcEkWw3ElQt4_irygveCqiDg8U0uIIFcBm4May7UQBsfoa7Mi4S5x0HBu8b6YrBez3wZ1TyB_kF1Mgxv0FyH7ihUH2XDb7SGekKd3NNOfZhT3YVx2bo49pe0dSNij"/>
+</div>
+<div class="flex-1">
+<p class="font-label-md text-label-md text-on-primary-fixed font-bold">Admin User</p>
+<p class="text-[10px] text-on-primary-fixed-variant uppercase tracking-wider">Online</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-lg py-md w-full sticky top-0 z-40 ml-sidebar-width bg-surface shadow-sm border-b border-outline-variant max-w-[calc(100%-280px)]">
+<div class="flex items-center gap-md">
+<button class="md:hidden p-sm hover:bg-surface-container-low rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h2 class="font-headline-md text-headline-md font-bold text-primary">Students Directory</h2>
+</div>
+<div class="flex items-center gap-lg flex-1 max-w-xl mx-xl">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline" data-icon="search">search</span>
+<input class="w-full bg-surface-container-low border-none rounded-xl pl-10 py-2 focus:ring-2 focus:ring-secondary-container font-body-sm text-body-sm transition-all" placeholder="Search roll number or name..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-sm">
+<button class="p-sm hover:bg-surface-container-low rounded-full text-on-surface-variant transition-all active:opacity-80">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-sm hover:bg-surface-container-low rounded-full text-on-surface-variant transition-all active:opacity-80">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+</div>
+</header>
+<!-- Main Content -->
+<main class="ml-sidebar-width p-lg min-h-screen">
+<!-- Filter Bar -->
+<div class="flex flex-wrap items-center gap-sm mb-xl overflow-x-auto pb-2 scrollbar-hide">
+<span class="text-label-md font-label-md text-outline uppercase mr-2">Departments:</span>
+<button class="px-md py-1.5 bg-secondary-container text-on-secondary-container rounded-full font-label-md text-label-md shadow-sm">All Departments</button>
+<button class="px-md py-1.5 bg-surface border border-outline-variant hover:bg-surface-container-low rounded-full font-label-md text-label-md transition-colors">Computer Science</button>
+<button class="px-md py-1.5 bg-surface border border-outline-variant hover:bg-surface-container-low rounded-full font-label-md text-label-md transition-colors">Information Technology</button>
+<button class="px-md py-1.5 bg-surface border border-outline-variant hover:bg-surface-container-low rounded-full font-label-md text-label-md transition-colors">Electronics</button>
+<button class="px-md py-1.5 bg-surface border border-outline-variant hover:bg-surface-container-low rounded-full font-label-md text-label-md transition-colors">Mechanical</button>
+<button class="px-md py-1.5 bg-surface border border-outline-variant hover:bg-surface-container-low rounded-full font-label-md text-label-md transition-colors">Civil Eng</button>
+</div>
+<!-- Student Grid -->
+<div class="bento-grid">
+<!-- Student Card 1 -->
+<div class="bg-surface-container-lowest p-md border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A high-quality headshot of a female university student with a bright, engaged expression. She is in a modern, naturally lit campus environment with soft bokeh in the background. The style is clean, corporate-professional, and fits a premium academic management system using a light-mode color palette of soft whites and deep navy accents." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3yNR-Jshl69yNS0yFP1OcG3vPVlD_iE0ur4aKGJJ13rfCqDWeHBY9vsZBgSqo2M7hWFnoAvsmPabmP5hRWzjy4ur4PumeyuMA_J5uxZX9MhWxpEfBwad8tmv1U_BARyPGoY2FABTtcwX9xBaqeqQRIQRECYhPMjqmEJzJdD5ZHHXXjxebjEmAP_o3OOILR4-0yh6s4ZgzJreunAKmprTBKaGk96MQdem1s7X93_OrQsvld_klPBWylSIPUAyJRykVzcQ6jOdqX5YE"/>
+</div>
+<div class="flex gap-xs">
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="View Profile">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-xs text-outline hover:text-error transition-colors" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-0.5">Alexandria Chen</h3>
+<p class="text-label-md font-label-md text-outline">Roll: CS-2024-001</p>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant font-medium">Department</span>
+<span class="text-on-surface">Computer Science</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant font-medium">Attendance</span>
+<span class="px-sm py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-label-md font-bold uppercase tracking-wider">Present</span>
+</div>
+</div>
+</div>
+<!-- Student Card 2 -->
+<div class="bg-surface-container-lowest p-md border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional studio headshot of a male student wearing a minimalist casual sweater. The lighting is crisp and clear, emphasizing a sophisticated academic look. The setting is a bright, airy architectural space with clean lines, matching a modern digital dashboard aesthetic. High-contrast colors of Slate and Electric Blue dominate the scene." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB3_eFWshOenfMLFU-DW7MhlTAxOxuHjf0e9EiHk6ojpOdOHioYSySwUaZuUiA4zgiwYbtqYpY1CQzFjc1l_6AQIybPWjHM1QCWdm3Yvu3DmPyg_zCX-eH7NSGwJ_FhoC6xOvj8uNPu6o73wKDvmabOJHrHdHl7iG3t5tYytJqUL0nPXyTbdm4G9n0xlexlzsiC5vxkcgWteBu8vU39CrOtVkLtVu_0iK-h0SvEOELLN7m-4i57cDTTaaGLJvp_Drhnnu4Roasy1RU6"/>
+</div>
+<div class="flex gap-xs">
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="View Profile">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-xs text-outline hover:text-error transition-colors" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-0.5">Marcus Vane</h3>
+<p class="text-label-md font-label-md text-outline">Roll: CS-2024-042</p>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant font-medium">Department</span>
+<span class="text-on-surface">Information Tech.</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant font-medium">Attendance</span>
+<span class="px-sm py-0.5 rounded-full bg-error-container text-on-error-container text-label-md font-bold uppercase tracking-wider">Absent</span>
+</div>
+</div>
+</div>
+<!-- Student Card 3 -->
+<div class="bg-surface-container-lowest p-md border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="Close-up portrait of a diverse university student with a confident smile. The background shows a modern library with clean white shelves and soft lighting. The visual style is premium and corporate, featuring a bright, high-key lighting setup that emphasizes clarity and professionalism in an administrative software interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD6n4BaIyBYrEJHZ5XA7G3TnQkZkABd3evpcLWVcQ-tB07W8j5edG5NyuvRjXmTRJlx8L3bkau_sWbEh55Ye00OwFyS46nUubDajSxATWaRlrGUV5rT5pPn6bmR-NxsXUUCdqPK_qUQaH2oT8DSoaeBf3kBxT-Z27UDH7wsLuoFKl85BM2OAEnQRNM69qaMXGfwwJI89o09CtF-MnWfaGLMl1aYFeoJiFnGm126hCd-G56itU6EI4P5xSD2LbTsaERZSOoXOKcwG7B6"/>
+</div>
+<div class="flex gap-xs">
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="View Profile">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-xs text-outline hover:text-error transition-colors" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-0.5">Sarah J. Miller</h3>
+<p class="text-label-md font-label-md text-outline">Roll: EL-2024-019</p>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant font-medium">Department</span>
+<span class="text-on-surface">Electronics Eng.</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant font-medium">Attendance</span>
+<span class="px-sm py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-label-md font-bold uppercase tracking-wider">Present</span>
+</div>
+</div>
+</div>
+<!-- Student Card 4 -->
+<div class="bg-surface-container-lowest p-md border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A portrait of a male student looking into the camera with a calm, intellectual expression. He is standing in a brightly lit engineering workshop with clean metallic surfaces. The color palette is modern and professional, utilizing Slate-950 backgrounds and Electric Blue highlights to convey a high-stakes administrative digital environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB5ZGMC-mb_Qs6S_dDHNLTcmhVToS7Mqik84S1FHufAyqH_Dt2kJL7heTeSFrxx5fNV67qd26t7sBaP_QU4qcBLMN9qDTaZFPFPdY_rwNggTHWzKdLp_owXcuX3GHhqjqC2edXEL1Dk1WKtmas-IKcNgYbKj-UjAVzpTx9XqkGFmUXhhqY5ZIvrh3-B-So9KmWwWNXrSDotCmNB1cKtl9vrGs9yrDoxMFBIpiRgODrOfiipINMYnqKfCQcKZ7HLHX2uaQzy7kh4eBf5"/>
+</div>
+<div class="flex gap-xs">
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="View Profile">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-xs text-outline hover:text-error transition-colors" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-0.5">David Kim</h3>
+<p class="text-label-md font-label-md text-outline">Roll: ME-2024-112</p>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant font-medium">Department</span>
+<span class="text-on-surface">Mechanical Eng.</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant font-medium">Attendance</span>
+<span class="px-sm py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-label-md font-bold uppercase tracking-wider">Present</span>
+</div>
+</div>
+</div>
+<!-- Student Card 5 -->
+<div class="bg-surface-container-lowest p-md border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A studio portrait of a female student with short dark hair, wearing a neutral-toned professional outfit. The lighting is soft-key, creating a gentle yet authoritative atmosphere suitable for a corporate data management tool. The background is a minimalist, light-gray office space, emphasizing a clean and efficient light-mode UI design style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCIcDqyg_asuXRD3H_7dIiee0rzdYKVcdhz3nG0iMxEhtBCc668TrIpzQnlMEA4Nr4Zl7lbUbjxMYlIJtFM55BxLy_pH0dgfR9jy32xJK8X_B-o_jedoQcgur7tC9Fc4JFLWqAeF773grtGWwkRCA7Jx5oIs3JostG6S8mHSpqKHy3mKnakXcW-nThwGBHsZ5wpvFh74THpsGBldmW-SDD_HmWRSm8nbeR95orR8Xr6OSJS04Bh85z4BM1yIMvJTLM0oOeOrQpxbpJN"/>
+</div>
+<div class="flex gap-xs">
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="View Profile">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-xs text-outline hover:text-error transition-colors" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-0.5">Leila Omondi</h3>
+<p class="text-label-md font-label-md text-outline">Roll: CV-2024-088</p>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant font-medium">Department</span>
+<span class="text-on-surface">Civil Eng.</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant font-medium">Attendance</span>
+<span class="px-sm py-0.5 rounded-full bg-amber-500/10 text-amber-600 text-label-md font-bold uppercase tracking-wider">Late</span>
+</div>
+</div>
+</div>
+<!-- Student Card 6 -->
+<div class="bg-surface-container-lowest p-md border border-outline-variant rounded-xl shadow-sm hover:shadow-md transition-all group">
+<div class="flex justify-between items-start mb-md">
+<div class="w-16 h-16 rounded-xl overflow-hidden bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of a focused male student in a bright, modern architectural lab. The lighting highlights sharp contours, creating a technical and precise visual tone. The setting features clean white surfaces and glass elements, perfectly fitting the aesthetic of an advanced AI attendance system. The mood is efficient and professional." src="https://lh3.googleusercontent.com/aida-public/AB6AXuASBrR0yuLR1zX4CFS2U9MdRO5k2F8i2iFbDy9HQPXtCcoT80sExpsAWgrzieRlV5jyatYqJhWRYerZLaGf00Xf3QYPxjhVen04DlpftgSAAEJJVgM6TxzeZ2jLPkTGYwzI3fX8vo0g8sO9Yg56xY10uYWbuxerukLVajxj9cobKlhIonC3GsK5QarNdAU7tmwgJCV2q6V0BIyGbaFJg2Rf3n6a2fHYW49ZNQqHrrABRlPwBSVen3OYxv5sjWSyidlRFvJBQm4p85E7"/>
+</div>
+<div class="flex gap-xs">
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="View Profile">
+<span class="material-symbols-outlined" data-icon="visibility">visibility</span>
+</button>
+<button class="p-xs text-outline hover:text-secondary transition-colors" title="Edit">
+<span class="material-symbols-outlined" data-icon="edit">edit</span>
+</button>
+<button class="p-xs text-outline hover:text-error transition-colors" title="Delete">
+<span class="material-symbols-outlined" data-icon="delete">delete</span>
+</button>
+</div>
+</div>
+<div class="mb-md">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-0.5">Julian Thorne</h3>
+<p class="text-label-md font-label-md text-outline">Roll: CS-2024-015</p>
+</div>
+<div class="space-y-md">
+<div class="flex justify-between items-center text-body-sm">
+<span class="text-on-surface-variant font-medium">Department</span>
+<span class="text-on-surface">Computer Science</span>
+</div>
+<div class="flex justify-between items-center">
+<span class="text-body-sm text-on-surface-variant font-medium">Attendance</span>
+<span class="px-sm py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 text-label-md font-bold uppercase tracking-wider">Present</span>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Floating Action Button -->
+<button class="fixed bottom-lg right-lg w-14 h-14 bg-secondary-container text-on-secondary-container rounded-full shadow-lg flex items-center justify-center hover:scale-110 active:scale-95 transition-all z-50 group">
+<span class="material-symbols-outlined text-[28px]" data-icon="add">add</span>
+<span class="absolute right-16 bg-primary text-on-primary text-label-md px-3 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">Add Student</span>
+</button>
+<script>
+        // Simple search interaction placeholder
+        const searchInput = document.querySelector('input[type="text"]');
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            const cards = document.querySelectorAll('.bento-grid > div');
+            
+            cards.forEach(card => {
+                const name = card.querySelector('h3').textContent.toLowerCase();
+                const roll = card.querySelector('p').textContent.toLowerCase();
+                if (name.includes(query) || roll.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        });
+
+        // Filter chips interaction
+        const chips = document.querySelectorAll('.flex.flex-wrap button');
+        chips.forEach(chip => {
+            chip.addEventListener('click', () => {
+                chips.forEach(c => {
+                    c.classList.remove('bg-secondary-container', 'text-on-secondary-container', 'shadow-sm');
+                    c.classList.add('bg-surface', 'border', 'border-outline-variant');
+                });
+                chip.classList.add('bg-secondary-container', 'text-on-secondary-container', 'shadow-sm');
+                chip.classList.remove('bg-surface', 'border', 'border-outline-variant');
+            });
+        });
+    </script>
+</body></html>

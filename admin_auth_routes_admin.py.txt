@@ -1,0 +1,51 @@
+from flask import Blueprint, render_template, redirect, url_for, flash, request
+from flask_login import login_user, logout_user, login_required, current_user
+from ..models import Admin, ActivityLog, db
+
+admin_bp = Blueprint('admin', __name__)
+
+@admin_bp.route('/login', methods=['GET', 'POST'])
+def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('admin.dashboard'))
+    
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        
+        admin = Admin.query.filter_by(username=username).first()
+        
+        if admin and admin.check_password(password):
+            login_user(admin)
+            
+            # Log the login action
+            log = ActivityLog(action=f"Admin '{username}' logged in successfully.")
+            db.session.add(log)
+            db.session.commit()
+            
+            next_page = request.args.get('next')
+            return redirect(next_page) if next_page else redirect(url_for('admin.dashboard'))
+        else:
+            flash('Invalid username or password.', 'error')
+            
+    return render_template('admin/login.html')
+
+@admin_bp.route('/logout')
+@login_required
+def logout():
+    username = current_user.username
+    logout_user()
+    
+    # Log the logout action
+    log = ActivityLog(action=f"Admin '{username}' logged out.")
+    db.session.add(log)
+    db.session.commit()
+    
+    flash('You have been logged out.', 'info')
+    return redirect(url_for('admin.login'))
+
+@admin_bp.route('/dashboard')
+@login_required
+def dashboard():
+    # This would render the existing Admin Dashboard screen
+    return render_template('admin/dashboard.html')

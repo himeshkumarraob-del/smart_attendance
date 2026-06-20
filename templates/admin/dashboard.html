@@ -1,0 +1,66 @@
+{% extends 'layouts/dashboard.html' %}
+{% block page_title %}Dashboard | Smart Attendance AI{% endblock %}
+{% block header %}Administrative Overview{% endblock %}
+{% block subheader %}Real-time attendance metrics{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Total Students</p>
+    <p class="text-3xl font-bold mt-1">{{ total_students }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Present Today</p>
+    <p class="text-3xl font-bold mt-1 text-emerald-600">{{ present_today }}</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <p class="text-sm text-slate-500">Attendance Rate</p>
+    <p class="text-3xl font-bold mt-1 text-blue-600">{{ attendance_rate }}%</p>
+  </div>
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm flex items-center">
+    <a href="{{ url_for('recognition.live_feed') }}" class="w-full text-center py-3 bg-blue-600 text-white rounded-lg font-medium hover:bg-blue-700">
+      Open Live Feed
+    </a>
+  </div>
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <h3 class="font-semibold mb-4">Today's Attendance</h3>
+    {% if recent_attendance %}
+      <div class="space-y-3">
+        {% for record in recent_attendance %}
+          <div class="flex items-center justify-between border-b border-slate-100 pb-2">
+            <div>
+              <p class="font-medium">{{ record.student.name }}</p>
+              <p class="text-xs text-slate-500">{{ record.student.roll_number }}</p>
+            </div>
+            <div class="text-right">
+              <span class="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700">{{ record.status }}</span>
+              <p class="text-xs text-slate-400 mt-1">{{ record.attendance_time.strftime('%H:%M') if record.attendance_time else '' }}</p>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <p class="text-sm text-slate-500">No attendance recorded today.</p>
+    {% endif %}
+  </div>
+
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <h3 class="font-semibold mb-4">Recent Activity</h3>
+    {% if recent_logs %}
+      <ul class="space-y-2 text-sm">
+        {% for log in recent_logs %}
+          <li class="flex justify-between gap-4 border-b border-slate-100 pb-2">
+            <span>{{ log.action }}</span>
+            <span class="text-slate-400 whitespace-nowrap">{{ log.timestamp.strftime('%Y-%m-%d %H:%M') }}</span>
+          </li>
+        {% endfor %}
+      </ul>
+    {% else %}
+      <p class="text-sm text-slate-500">No activity yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

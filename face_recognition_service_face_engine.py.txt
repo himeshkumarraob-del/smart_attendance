@@ -1,0 +1,88 @@
+import face_recognition
+import cv2
+import numpy as np
+import os
+import pickle
+from flask import current_app
+from ..models import Student, db
+
+class FaceEngine:
+    def __init__(self):
+        self.encoding_file = os.path.join(os.getcwd(), 'app/static/encodings.pickle')
+        self.known_encodings = []
+        self.known_ids = []
+        self.load_encodings()
+
+    def load_encodings(self):
+        """Loads encodings from the pickle file."""
+        if os.path.exists(self.encoding_file):
+            with open(self.encoding_file, 'rb') as f:
+                data = pickle.load(f)
+                self.known_encodings = data['encodings']
+                self.known_ids = data['ids']
+        else:
+            self.train_all_faces()
+
+    def train_all_faces(self):
+        """Generates encodings for all students in the database."""
+        students = Student.query.all()
+        all_encodings = []
+        all_ids = []
+
+        for student in students:
+            student_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'datasets', student.student_id)
+            if not os.path.exists(student_dir):
+                continue
+
+            for filename in os.listdir(student_dir):
+                if filename.endswith(('.jpg', '.jpeg', '.png')):
+                    filepath = os.path.join(student_dir, filename)
+                    image = face_recognition.load_image_file(filepath)
+                    encodings = face_recognition.face_encodings(image)
+                    
+                    if len(encodings) > 0:
+                        all_encodings.append(encodings[0])
+                        all_ids.append(student.id)
+
+        # Save to pickle
+        with open(self.encoding_file, 'wb') as f:
+            pickle.dump({'encodings': all_encodings, 'ids': all_ids}, f)
+        
+        self.known_encodings = all_encodings
+        self.known_ids = all_ids
+        return len(all_ids)
+
+    def recognize_face(self, frame_bgr):
+        """Recognizes faces in a frame and returns matches."""
+        # Convert BGR to RGB
+        rgb_frame = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2RGB)
+        
+        # Find all faces and encodings in the current frame
+        face_locations = face_recognition.face_locations(rgb_frame)
+        face_encodings = face_recognition.face_encodings(rgb_frame, face_locations)
+
+        results = []
+        for (top, right, bottom, left), face_encoding in zip(face_locations, face_encodings):
+            # Compare face encoding with known faces
+            matches = face_recognition.compare_faces(self.known_encodings, face_encoding, tolerance=0.6)
+            name = "Unknown"
+            student_id = None
+            confidence = 0.0
+
+            # Use distance to find the best match
+            face_distances = face_recognition.face_distance(self.known_encodings, face_encoding)
+            best_match_index = np.argmin(face_distances)
+            
+            if matches[best_match_index]:
+                student_id = self.known_ids[best_match_index]
+                # Calculate confidence score (inverse of distance)
+                confidence = round((1 - face_distances[best_match_index]) * 100, 2)
+            
+            results.append({
+                'location': (top, right, bottom, left),
+                'student_id': student_id,
+                'confidence': confidence,
+                'unknown': student_id is None
+            })
+            
+        return results

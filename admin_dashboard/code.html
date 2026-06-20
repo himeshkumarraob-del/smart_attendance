@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Smart Attendance AI - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-error-container": "#93000a",
+                    "on-background": "#1b1b1d",
+                    "primary-fixed-dim": "#bec6e0",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface-container-lowest": "#ffffff",
+                    "on-error": "#ffffff",
+                    "error": "#ba1a1a",
+                    "surface-container": "#f0edef",
+                    "on-secondary-fixed-variant": "#004395",
+                    "surface-dim": "#dcd9db",
+                    "surface": "#fcf8fa",
+                    "on-primary": "#ffffff",
+                    "secondary": "#0058be",
+                    "inverse-primary": "#bec6e0",
+                    "surface-bright": "#fcf8fa",
+                    "tertiary-container": "#271901",
+                    "outline-variant": "#c6c6cd",
+                    "primary-fixed": "#dae2fd",
+                    "surface-container-highest": "#e4e2e4",
+                    "primary": "#000000",
+                    "on-tertiary": "#ffffff",
+                    "secondary-container": "#2170e4",
+                    "error-container": "#ffdad6",
+                    "on-secondary-fixed": "#001a42",
+                    "on-primary-container": "#7c839b",
+                    "inverse-surface": "#303032",
+                    "primary-container": "#131b2e",
+                    "background": "#fcf8fa",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface-container-low": "#f6f3f5",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-secondary-container": "#fefcff",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "surface-container-high": "#eae7e9",
+                    "surface-tint": "#565e74",
+                    "on-tertiary-container": "#98805d",
+                    "on-secondary": "#ffffff",
+                    "on-surface": "#1b1b1d",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "on-tertiary-fixed": "#271901",
+                    "outline": "#76777d",
+                    "on-surface-variant": "#45464d",
+                    "on-primary-fixed": "#131b2e",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "tertiary": "#000000",
+                    "surface-variant": "#e4e2e4"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "md": "16px",
+                    "container-max": "1440px",
+                    "sm": "8px",
+                    "xl": "32px",
+                    "lg": "24px",
+                    "sidebar-width": "280px",
+                    "base": "4px",
+                    "xs": "4px"
+            },
+            "fontFamily": {
+                    "body-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "label-md": ["Inter"],
+                    "data-tabular": ["Inter"],
+                    "headline-lg-mobile": ["Inter"],
+                    "headline-md": ["Inter"]
+            },
+            "fontSize": {
+                    "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                    "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}],
+                    "data-tabular": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                    "headline-lg-mobile": ["24px", {"lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700"}],
+                    "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        body { font-family: 'Inter', sans-serif; }
+        .sidebar-active-border { box-shadow: inset 4px 0 0 0 #2170e4; }
+        .chart-gradient { background: linear-gradient(180deg, rgba(33, 112, 228, 0.1) 0%, rgba(33, 112, 228, 0) 100%); }
+        .pulse-emerald { animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .5; } }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-background text-on-background min-h-screen">
+<!-- Navigation Drawer (Sidebar) -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-primary dark:bg-primary-container border-r border-outline-variant dark:border-outline shadow-sm flex flex-col h-full overflow-y-auto z-50 hidden md:flex">
+<!-- Profile Header -->
+<div class="px-lg py-xl flex flex-col gap-sm">
+<div class="w-12 h-12 rounded-full overflow-hidden border-2 border-secondary-container">
+<img alt="Admin Profile" class="w-full h-full object-cover" data-alt="A professional corporate headshot of a high-level system administrator, clean lighting, wearing a dark navy suit, minimalist office background with soft bokeh, high-resolution digital photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC7voJksswgF1Fn4c6oPuP0KpU4t4yjbInmD2O0Px6hEngVurEeIgb9u6CjmA3KXI-KAWtAIoOxDnaYntJ6a-yLAW9fDMALMuStrE0yYTyUWmEpyYYDjQCKxhcC99uiDjFMXmDXVjhbU7O5DoHd82Wsuyt04yz2RVBt1hxLW3NUsDmZI9rzbeibBMGi2eTqzJ3sm7pDI2WaJk03-WsKWiCyz0PfJbuw_RaPk0ppoWgES_pWoR9xCF_Wtwn7XUWPbL-Fjo9YNZs973bb"/>
+</div>
+<div class="mt-sm">
+<h2 class="font-headline-md text-headline-md text-on-primary-container dark:text-primary-fixed">Admin User</h2>
+<p class="font-label-md text-label-md text-on-primary-fixed-variant">System Administrator</p>
+<div class="flex items-center gap-xs mt-xs">
+<span class="w-2 h-2 bg-emerald-500 rounded-full"></span>
+<span class="font-label-md text-label-md text-on-primary-fixed-variant">Online</span>
+</div>
+</div>
+</div>
+<!-- Nav Items -->
+<nav class="flex-1 flex flex-col mt-md">
+<a class="flex items-center gap-md px-lg py-md border-l-4 border-secondary-container bg-surface-container-highest/10 text-on-secondary-fixed font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+                Dashboard
+            </a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+                Students
+            </a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+                Face Registration
+            </a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+                Attendance
+            </a>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors duration-150 font-label-md text-label-md" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+                Reports
+            </a>
+</nav>
+</aside>
+<!-- Main Content Area -->
+<main class="md:ml-sidebar-width min-h-screen flex flex-col">
+<!-- Top App Bar -->
+<header class="flex justify-between items-center px-lg py-md w-full sticky top-0 z-40 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-md">
+<button class="md:hidden p-sm hover:bg-surface-container-low transition-all">
+<span class="material-symbols-outlined text-primary" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Smart Attendance AI</h1>
+</div>
+<div class="flex items-center gap-md">
+<button class="p-sm rounded-full hover:bg-surface-container-low transition-all relative">
+<span class="material-symbols-outlined text-on-surface-variant" data-icon="notifications">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<div class="hidden sm:block text-right">
+<p class="font-label-md text-label-md text-on-surface">Oct 24, 2023</p>
+<p class="font-label-md text-label-md text-on-surface-variant">09:42 AM</p>
+</div>
+</div>
+</header>
+<!-- Dashboard Canvas -->
+<section class="p-lg md:p-xl max-w-container-max mx-auto w-full flex flex-col gap-lg">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between gap-md">
+<div>
+<h2 class="font-headline-lg-mobile md:font-headline-lg text-headline-lg-mobile md:text-headline-lg text-on-surface">Administrative Overview</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Monitoring real-time student recognition and attendance metrics.</p>
+</div>
+<button class="flex items-center justify-center gap-sm bg-secondary-container text-on-secondary-container px-lg py-md rounded-xl font-label-md text-label-md hover:opacity-90 active:scale-95 transition-all shadow-sm">
+<span class="material-symbols-outlined" data-icon="videocam">videocam</span>
+                    Real-time Feed
+                </button>
+</div>
+<!-- Bento Grid Stats -->
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-md">
+<!-- Stat Card 1 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="p-sm bg-primary-fixed rounded-lg">
+<span class="material-symbols-outlined text-on-primary-fixed" data-icon="groups">groups</span>
+</span>
+<span class="text-on-secondary-fixed-variant font-label-md text-label-md bg-secondary-fixed/30 px-sm py-xs rounded">+12%</span>
+</div>
+<div class="mt-md">
+<p class="font-label-md text-label-md text-on-surface-variant">Total Students</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">540</h3>
+</div>
+</div>
+<!-- Stat Card 2 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="p-sm bg-secondary-fixed rounded-lg">
+<span class="material-symbols-outlined text-on-secondary-fixed" data-icon="check_circle">check_circle</span>
+</span>
+<span class="font-label-md text-label-md text-on-surface-variant">Today</span>
+</div>
+<div class="mt-md">
+<p class="font-label-md text-label-md text-on-surface-variant">Present Today</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">482</h3>
+</div>
+</div>
+<!-- Stat Card 3 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="p-sm bg-tertiary-fixed rounded-lg">
+<span class="material-symbols-outlined text-on-tertiary-fixed" data-icon="trending_up">trending_up</span>
+</span>
+<div class="flex gap-1">
+<span class="w-1 h-3 bg-secondary rounded-full"></span>
+<span class="w-1 h-4 bg-secondary rounded-full"></span>
+<span class="w-1 h-2 bg-secondary rounded-full"></span>
+</div>
+</div>
+<div class="mt-md">
+<p class="font-label-md text-label-md text-on-surface-variant">Attendance Rate</p>
+<h3 class="font-headline-lg text-headline-lg text-on-surface">89%</h3>
+</div>
+</div>
+<!-- Stat Card 4 -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col justify-between">
+<div class="flex items-center justify-between">
+<span class="p-sm bg-emerald-100 rounded-lg">
+<span class="material-symbols-outlined text-emerald-700" data-icon="health_and_safety">health_and_safety</span>
+</span>
+<span class="relative flex h-3 w-3">
+<span class="pulse-emerald absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+<span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+</span>
+</div>
+<div class="mt-md">
+<p class="font-label-md text-label-md text-on-surface-variant">System Status</p>
+<h3 class="font-headline-lg text-headline-lg text-emerald-600">Healthy</h3>
+</div>
+</div>
+</div>
+<!-- Main Insights Section -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg">
+<!-- Attendance Trends Chart -->
+<div class="lg:col-span-2 bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm">
+<div class="flex items-center justify-between mb-xl">
+<h3 class="font-headline-md text-headline-md text-on-surface">Attendance Trends</h3>
+<div class="flex items-center gap-sm">
+<select class="font-label-md text-label-md border-none bg-surface-container-low rounded-lg focus:ring-0">
+<option>Last 7 Days</option>
+<option>Last 30 Days</option>
+</select>
+</div>
+</div>
+<!-- Chart Placeholder -->
+<div class="relative h-[300px] w-full flex items-end justify-between gap-sm pt-md">
+<div class="absolute inset-0 border-b border-l border-outline-variant"></div>
+<!-- Mock Bars/Line for visualization -->
+<div class="relative flex-1 h-[80%] chart-gradient rounded-t-lg group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">85%</div>
+</div>
+<div class="relative flex-1 h-[88%] chart-gradient rounded-t-lg group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">88%</div>
+</div>
+<div class="relative flex-1 h-[82%] chart-gradient rounded-t-lg group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">82%</div>
+</div>
+<div class="relative flex-1 h-[92%] chart-gradient rounded-t-lg group border-t-2 border-secondary">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">92%</div>
+</div>
+<div class="relative flex-1 h-[89%] chart-gradient rounded-t-lg group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-primary text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity">89%</div>
+</div>
+<div class="relative flex-1 h-[95%] bg-secondary/20 border-t-2 border-secondary rounded-t-lg group">
+<div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-secondary text-white text-[10px] px-2 py-1 rounded opacity-100">Today: 95%</div>
+</div>
+</div>
+<div class="flex justify-between mt-sm text-on-surface-variant font-label-md text-label-md">
+<span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+</div>
+</div>
+<!-- Recent Activity Log -->
+<div class="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex flex-col">
+<div class="flex items-center justify-between mb-xl">
+<h3 class="font-headline-md text-headline-md text-on-surface">Recent Activity</h3>
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer" data-icon="more_vert">more_vert</span>
+</div>
+<div class="flex flex-col gap-lg">
+<!-- Activity Entry 1 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full border-2 border-emerald-100 overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Close up of a university student girl, bright natural lighting, focused expression, high contrast facial features, ultra-realistic portrait style, clean corporate professional photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5u6Se4D2ZnukG18Qz4353v__xWWJnkr0fgKG3pcOGEowoD2pgC5xAtsLp74sJMleP39dm86eGnzS2HSKOw27f2l-fDMvfynS93n5ZDXXFVQE45065elmfAqvzbAq6ns8T2hno3XdzHVhdVP5gvMNBOiZ0oQwDB7SaQgAy37NlFDsAVo0F1ksMpcJtphwo4-IytApVx4B4u7pSqPbLFkVV6IJExkS7Kew7g0ByeL4B1h-VrfXgyu1VnuhV1AAsdO_oyBP-U4nDpDbL"/>
+</div>
+<div class="flex-1">
+<p class="font-data-tabular text-data-tabular text-on-surface">Sarah Jenkins <span class="text-on-surface-variant font-normal">recognized</span></p>
+<p class="font-label-md text-label-md text-on-surface-variant">Gate A • 09:12 AM</p>
+</div>
+<span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-label-md text-[10px]">Present</span>
+</div>
+<!-- Activity Entry 2 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full border-2 border-emerald-100 overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A young man student with glasses, sharp facial recognition profile, corporate headshot aesthetic, high-end studio lighting, 8k resolution, modern professional look." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBmx3GdbwwVXZN-etwcH0iolB4b2gYq8S875PF6eoroOaN34D2P42DrlAT0np17BmDtAMM4-3p2i8-l_sBPsbHhXdqwfIUJ_sbFG9WR2KPU9IfSTWOYU_zxLCIRjfD-qu6MoEYy-cOjKaNBL4qbvA_74NCaxvjbMQTzQLEnLiaT-I9BFgcyoq0gTZYFCmzLElRBrEIxKumDJKdDPTfTd5xERTco8ZGzVOW35sOqfZSdHtEJm3VdFYFy3bOsSH1ZHNnOCD4a7chhCH0m"/>
+</div>
+<div class="flex-1">
+<p class="font-data-tabular text-data-tabular text-on-surface">Mark Thorne <span class="text-on-surface-variant font-normal">recognized</span></p>
+<p class="font-label-md text-label-md text-on-surface-variant">Main Hall • 09:08 AM</p>
+</div>
+<span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-label-md text-[10px]">Present</span>
+</div>
+<!-- Activity Entry 3 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full border-2 border-emerald-100 overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A female student with a smiling expression, soft morning light, highly detailed skin texture, professional academic portrait, tech-focused environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDS0ESl5ojOpATTGdLR7GLM9hPSwfitHeCqqoekTnS3to_k5KNn4TVWPSS69zKbenUxlRknhEMEva8942qScnstLLaNd8q0O9F8bP2vAHo7fbi0YhwR3ksYyOtHAVdDhlpj0gzSwr7H7wOqMgXMIWP-Gm3JX_IBQ059rbTsgJDGDZuFW2FZ8-f49IhzzaFIHAmY2vtXELxOOUiGSW5UblXNDQKBR7Wx9mklU4DtP_qW47c41KZutlCXPADmvQwnz5bw9eK275zrEtO_"/>
+</div>
+<div class="flex-1">
+<p class="font-data-tabular text-data-tabular text-on-surface">Elena Rodriguez <span class="text-on-surface-variant font-normal">recognized</span></p>
+<p class="font-label-md text-label-md text-on-surface-variant">Gate B • 08:55 AM</p>
+</div>
+<span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-label-md text-[10px]">Present</span>
+</div>
+<!-- Activity Entry 4 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full border-2 border-emerald-100 overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Student with diverse features, wearing a modern sweatshirt, clear high definition recognition capture, neutral background, sharp focus, professional lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAawwu05AFy74NIbtF2RfBvo29dNEBu2SYpO6RKAgyzagnFbmF4-HfTBHe826Xt3VR-aOW7Ndcjggnx0Sm4SBbwXL0qIESZhVqMCllE8A_-v1DXqH9ZES6h7AdztltMpCXUMF_lAUVb8c4HWwWeuq8_EcLCQXqeeHi2Vlyxe-D8M2u18KRkGG0jkA1kid3nltDWe6WU-LlaEuBMuxGQXK-BpQMSpY66FWV3OtZPb7TSt6cdRO_XIvXLIT9l7vXCPlZZhU4ary1pik5m"/>
+</div>
+<div class="flex-1">
+<p class="font-data-tabular text-data-tabular text-on-surface">Alex Chen <span class="text-on-surface-variant font-normal">recognized</span></p>
+<p class="font-label-md text-label-md text-on-surface-variant">Gate A • 08:42 AM</p>
+</div>
+<span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-label-md text-[10px]">Present</span>
+</div>
+<!-- Activity Entry 5 -->
+<div class="flex items-center gap-md">
+<div class="w-10 h-10 rounded-full border-2 border-emerald-100 overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="Young professional student looking confident, tech-savvy vibe, clear facial features, 3D biometric style lighting, sharp details, cinematic commercial photography." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCzEOUPrGsj0xX86MDcFkYiDLIhUx6zS4nNhNso_-NlWEojKdEcG_Qb3MTw4tPPuAGAaQmRWCreul42kzE6iMr9Xu4p72AOB4AHcY8xoH0KwrZZnauhOz2GDqmghbzlINsRClWRCniq1GjxoUBzGmgthyjCd49mtMql-saz43ju8qzpQPQM5GFxwYOFkLNLX1BTpAmCeKspxP_RoLfJDMO80RAmiO1aHtiHV2ETsV9JIvMs33aPOM0C0miT3oeDabucPsgFzNclwa-i"/>
+</div>
+<div class="flex-1">
+<p class="font-data-tabular text-data-tabular text-on-surface">James Wilson <span class="text-on-surface-variant font-normal">recognized</span></p>
+<p class="font-label-md text-label-md text-on-surface-variant">Gate C • 08:31 AM</p>
+</div>
+<span class="px-sm py-xs bg-emerald-50 text-emerald-700 rounded-full font-label-md text-[10px]">Present</span>
+</div>
+</div>
+<button class="mt-xl w-full text-center py-md font-label-md text-label-md text-secondary hover:underline transition-all">
+                        View Full History
+                    </button>
+</div>
+</div>
+<!-- Additional Quick Actions -->
+<div class="grid grid-cols-1 md:grid-cols-2 gap-md">
+<div class="p-lg bg-surface-container rounded-xl border border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary" data-icon="cloud_upload">cloud_upload</span>
+<div>
+<h4 class="font-headline-md text-[16px] text-on-surface">Batch Sync</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Last synced 14 minutes ago</p>
+</div>
+</div>
+<button class="px-md py-sm bg-surface-container-lowest border border-outline rounded-lg font-label-md text-label-md">Sync Now</button>
+</div>
+<div class="p-lg bg-surface-container rounded-xl border border-outline-variant flex items-center justify-between">
+<div class="flex items-center gap-md">
+<span class="material-symbols-outlined text-secondary" data-icon="terminal">terminal</span>
+<div>
+<h4 class="font-headline-md text-[16px] text-on-surface">System Logs</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">All services operating normally</p>
+</div>
+</div>
+<button class="px-md py-sm bg-surface-container-lowest border border-outline rounded-lg font-label-md text-label-md">View Logs</button>
+</div>
+</div>
+</section>
+<!-- Footer -->
+<footer class="mt-auto p-lg text-center border-t border-outline-variant">
+<p class="font-label-md text-label-md text-on-surface-variant">© 2023 Smart Attendance AI. Professional Administrative Dashboard v4.2.0</p>
+</footer>
+</main>
+<!-- Mobile Navigation (Bottom Nav) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface border-t border-outline-variant flex justify-around items-center py-sm z-50 shadow-[0_-2px_10px_rgba(0,0,0,0.05)]">
+<a class="flex flex-col items-center gap-1 text-secondary" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+<span class="font-label-md text-[10px]">Dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-[10px]">Students</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="font-label-md text-[10px]">Face Reg</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-md text-[10px]">Reports</span>
+</a>
+</nav>
+<script>
+        // Micro-interactions for Dashboard
+        document.addEventListener('DOMContentLoaded', () => {
+            const cards = document.querySelectorAll('.bg-surface-container-lowest');
+            cards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transform = 'translateY(-2px)';
+                    card.classList.add('transition-transform', 'duration-300');
+                });
+                card.addEventListener('mouseleave', () => {
+                    card.style.transform = 'translateY(0)';
+                });
+            });
+
+            // Mocking a live update occasionally
+            setInterval(() => {
+                const activityContainer = document.querySelector('.flex.flex-col.gap-lg');
+                if (activityContainer) {
+                    const firstItem = activityContainer.children[0];
+                    firstItem.style.opacity = '0.5';
+                    setTimeout(() => firstItem.style.opacity = '1', 500);
+                }
+            }, 5000);
+        });
+    </script>
+</body></html>

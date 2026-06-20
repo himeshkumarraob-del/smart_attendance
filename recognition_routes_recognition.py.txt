@@ -1,0 +1,79 @@
+from flask import Blueprint, render_template, request, jsonify, current_app
+from flask_login import login_required
+from ..models import Student, ActivityLog, db
+import os
+import cv2
+import numpy as np
+import base64
+from datetime import datetime
+
+recognition_bp = Blueprint('recognition', __name__)
+
+@recognition_bp.route('/register/<int:student_id>')
+@login_required
+def register_face(student_id):
+    student = Student.query.get_or_404(student_id)
+    return render_template('recognition/register.html', student=student)
+
+@recognition_bp.route('/upload_face/<int:student_id>', methods=['POST'])
+@login_required
+def upload_face(student_id):
+    student = Student.query.get_or_404(student_id)
+    data = request.json
+    image_data = data.get('image')
+    image_index = data.get('index')
+    
+    if not image_data:
+        return jsonify({'error': 'No image data provided'}), 400
+        
+    # Decode base64 image
+    try:
+        header, encoded = image_data.split(",", 1)
+        data_bytes = base64.b64decode(encoded)
+        nparr = np.frombuffer(data_bytes, np.uint8)
+        img = cv2.imdecode(nparr, cv2.imcolors.IMREAD_COLOR)
+        
+        # 1. Face Detection Validation
+        face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+        gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+        faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+        
+        if len(faces) == 0:
+            return jsonify({'error': 'No face detected. Please ensure your face is visible.'}), 400
+        if len(faces) > 1:
+            return jsonify({'error': 'Multiple faces detected. Only one person should be in the frame.'}), 400
+            
+        # 2. Quality Check (Simple Blur Detection)
+        laplacian_var = cv2.Laplacian(gray, cv2.CV_64F).var()
+        if laplacian_var < 100:
+            return jsonify({'error': 'Image is too blurry. Please stay still.'}), 400
+            
+        # 3. Save Image
+        student_dir = os.path.join(current_app.config['UPLOAD_FOLDER'], 'datasets', student.student_id)
+        if not os.path.exists(student_dir):
+            os.makedirs(student_dir)
+            
+        filename = f"face_{image_index}_{datetime.now().strftime('%Y%m%d_%H%M%S')}.jpg"
+        filepath = os.path.join(student_dir, filename)
+        cv2.imwrite(filepath, img)
+        
+        # Update student record if this is the first image or a specific master image
+        if image_index == 0:
+            student.image_path = f"datasets/{student.student_id}/{filename}"
+            db.session.commit()
+            
+        return jsonify({'success': True, 'path': filename})
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@recognition_bp.route('/complete_registration/<int:student_id>', methods=['POST'])
+@login_required
+def complete_registration(student_id):
+    student = Student.query.get_or_404(student_id)
+    
+    log = ActivityLog(action=f"Completed face registration for: {student.name}")
+    db.session.add(log)
+    db.session.commit()
+    
+    return jsonify({'success': True, 'message': 'Registration finalized.'})

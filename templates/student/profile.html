@@ -1,0 +1,55 @@
+{% extends 'layouts/dashboard.html' %}
+{% block page_title %}{{ student.name }} | Smart Attendance AI{% endblock %}
+{% block header %}{{ student.name }}{% endblock %}
+{% block subheader %}Student ID {{ student.student_id }} · Roll {{ student.roll_number }}{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+  <div class="lg:col-span-1 bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+    <h3 class="font-semibold mb-4">Profile</h3>
+    <dl class="space-y-3 text-sm">
+      <div><dt class="text-slate-500">Department</dt><dd class="font-medium">{{ student.department or 'N/A' }}</dd></div>
+      <div><dt class="text-slate-500">Email</dt><dd class="font-medium">{{ student.email or 'N/A' }}</dd></div>
+      <div><dt class="text-slate-500">Face Images</dt><dd class="font-medium">{{ student.face_image_count() }}</dd></div>
+      <div><dt class="text-slate-500">Registered</dt><dd class="font-medium">{{ student.created_at.strftime('%Y-%m-%d') }}</dd></div>
+    </dl>
+    <div class="flex flex-col gap-2 mt-6">
+      <a href="{{ url_for('recognition.register_face', student_id=student.id) }}" class="text-center py-2 bg-blue-600 text-white rounded-lg">Register Face</a>
+      <a href="{{ url_for('student.edit', student_id=student.id) }}" class="text-center py-2 border border-slate-200 rounded-lg">Edit</a>
+      <form method="post" action="{{ url_for('student.delete', student_id=student.id) }}" onsubmit="return confirm('Delete this student?');">
+        <button type="submit" class="w-full py-2 border border-red-200 text-red-600 rounded-lg">Delete</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="lg:col-span-2 bg-white rounded-xl border border-slate-200 p-6 shadow-sm">
+    <h3 class="font-semibold mb-4">Attendance History</h3>
+    {% if attendances %}
+      <div class="overflow-x-auto">
+        <table class="min-w-full text-sm">
+          <thead>
+            <tr class="text-left text-slate-500 border-b">
+              <th class="py-2 pr-4">Date</th>
+              <th class="py-2 pr-4">Time</th>
+              <th class="py-2 pr-4">Status</th>
+              <th class="py-2">Confidence</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in attendances %}
+              <tr class="border-b border-slate-100">
+                <td class="py-2 pr-4">{{ row.attendance_date }}</td>
+                <td class="py-2 pr-4">{{ row.attendance_time.strftime('%H:%M:%S') if row.attendance_time else '-' }}</td>
+                <td class="py-2 pr-4"><span class="px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 text-xs">{{ row.status }}</span></td>
+                <td class="py-2">{{ row.confidence_score or '-' }}{% if row.confidence_score %}%{% endif %}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <p class="text-slate-500 text-sm">No attendance records yet.</p>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

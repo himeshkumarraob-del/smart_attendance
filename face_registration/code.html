@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Face Registration - Smart Attendance AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "on-surface": "#1b1b1d",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "inverse-surface": "#303032",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "on-secondary-fixed": "#001a42",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "on-error": "#ffffff",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface": "#fcf8fa",
+                    "on-tertiary-fixed": "#271901",
+                    "surface-variant": "#e4e2e4",
+                    "on-surface-variant": "#45464d",
+                    "on-primary-fixed": "#131b2e",
+                    "surface-bright": "#fcf8fa",
+                    "primary-fixed-dim": "#bec6e0",
+                    "error-container": "#ffdad6",
+                    "error": "#ba1a1a",
+                    "outline-variant": "#c6c6cd",
+                    "surface-container-lowest": "#ffffff",
+                    "inverse-primary": "#bec6e0",
+                    "on-primary": "#ffffff",
+                    "surface-container": "#f0edef",
+                    "secondary-fixed": "#d8e2ff",
+                    "on-tertiary-container": "#98805d",
+                    "tertiary-container": "#271901",
+                    "on-secondary-container": "#fefcff",
+                    "on-secondary-fixed-variant": "#004395",
+                    "on-primary-container": "#7c839b",
+                    "background": "#fcf8fa",
+                    "tertiary": "#000000",
+                    "secondary": "#0058be",
+                    "outline": "#76777d",
+                    "on-background": "#1b1b1d",
+                    "surface-container-low": "#f6f3f5",
+                    "secondary-fixed-dim": "#adc6ff",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface-tint": "#565e74",
+                    "on-secondary": "#ffffff",
+                    "on-error-container": "#93000a",
+                    "surface-container-high": "#eae7e9",
+                    "surface-dim": "#dcd9db",
+                    "primary-container": "#131b2e",
+                    "primary": "#000000",
+                    "surface-container-highest": "#e4e2e4",
+                    "secondary-container": "#2170e4",
+                    "on-tertiary": "#ffffff",
+                    "primary-fixed": "#dae2fd"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "xs": "4px",
+                    "lg": "24px",
+                    "container-max": "1440px",
+                    "sm": "8px",
+                    "md": "16px",
+                    "base": "4px",
+                    "xl": "32px",
+                    "sidebar-width": "280px"
+            },
+            "fontFamily": {
+                    "data-tabular": ["Inter"],
+                    "headline-md": ["Inter"],
+                    "headline-lg": ["Inter"],
+                    "body-sm": ["Inter"],
+                    "body-md": ["Inter"],
+                    "label-md": ["Inter"],
+                    "headline-lg-mobile": ["Inter"]
+            },
+            "fontSize": {
+                    "data-tabular": ["14px", { "lineHeight": "20px", "fontWeight": "500" }],
+                    "headline-md": ["20px", { "lineHeight": "28px", "fontWeight": "600" }],
+                    "headline-lg": ["30px", { "lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                    "label-md": ["12px", { "lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600" }],
+                    "headline-lg-mobile": ["24px", { "lineHeight": "32px", "letterSpacing": "-0.01em", "fontWeight": "700" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        .pulse-overlay {
+            animation: pulse-ring 2s cubic-bezier(0.215, 0.61, 0.355, 1) infinite;
+        }
+        @keyframes pulse-ring {
+            0% { transform: scale(0.95); opacity: 0.5; }
+            50% { transform: scale(1.05); opacity: 0.1; }
+            100% { transform: scale(0.95); opacity: 0.5; }
+        }
+        .scanning-line {
+            animation: scan 3s linear infinite;
+        }
+        @keyframes scan {
+            0% { top: 0%; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="bg-surface text-on-surface font-body-md min-h-screen flex">
+<!-- NavigationDrawer -->
+<aside class="fixed left-0 top-0 h-full w-sidebar-width bg-primary dark:bg-primary-container border-r border-outline-variant dark:border-outline shadow-sm flex flex-col h-full overflow-y-auto z-50 md:flex hidden">
+<div class="p-lg flex items-center gap-md">
+<div class="w-10 h-10 rounded-full bg-surface-container overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of an administrative user in a corporate setting. High key lighting, modern light mode aesthetic. Sharp focus, high resolution, minimalist background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTnxc5Q_JJJLoJdRs135RcshIkZPgEvYAJR-_AiMSR4TbpOS1M_6WhE1teGCWKa2MUoRvDodEvL5f-g4XkSoCIFrW0X0KnaD0KSmBQAyHJrILryHXUKUTSiarww23bsaNbLbkcYSOtyEXtvgswjvYmo-c6rElz7O21ZtCz35GtXhmd56chVoq5hdwWirYAAfTesV5UN2Hek1SIJ-ZKO9yUNMvHQgWMAxYXsDjzVw5Z6DZ2rsEVcf_sEzHot4laKwHSDLqMtDsb4VUr"/>
+</div>
+<div class="flex flex-col">
+<span class="font-headline-md text-headline-md text-on-primary-container dark:text-primary-fixed">Admin User</span>
+<span class="font-label-md text-label-md text-secondary-fixed dark:text-secondary-fixed-dim">System Administrator</span>
+</div>
+</div>
+<nav class="flex-1 mt-md">
+<ul class="flex flex-col gap-sm">
+<li>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md text-secondary-fixed dark:text-secondary-fixed-dim">Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="group">group</span>
+<span class="font-label-md text-label-md text-secondary-fixed dark:text-secondary-fixed-dim">Students</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md border-l-4 border-secondary-container bg-surface-container-highest/10 text-on-secondary-fixed active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="face">face</span>
+<span class="font-label-md text-label-md text-secondary-fixed dark:text-secondary-fixed-dim">Face Registration</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="event_available">event_available</span>
+<span class="font-label-md text-label-md text-secondary-fixed dark:text-secondary-fixed-dim">Attendance</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-md px-lg py-md text-on-primary-fixed-variant hover:text-on-secondary-fixed hover:bg-primary-container/50 transition-colors active:scale-95 duration-150" href="#">
+<span class="material-symbols-outlined" data-icon="assessment">assessment</span>
+<span class="font-label-md text-label-md text-secondary-fixed dark:text-secondary-fixed-dim">Reports</span>
+</a>
+</li>
+</ul>
+</nav>
+</aside>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 md:ml-sidebar-width w-full">
+<!-- TopAppBar -->
+<header class="flex justify-between items-center px-lg py-md w-full sticky top-0 z-40 bg-surface dark:bg-inverse-surface border-b border-outline-variant dark:border-outline shadow-sm">
+<div class="flex items-center gap-md">
+<button class="md:hidden p-sm text-on-surface-variant hover:bg-surface-container-low transition-all active:opacity-80 rounded-full">
+<span class="material-symbols-outlined" data-icon="menu">menu</span>
+</button>
+<h1 class="font-headline-md text-headline-md font-bold text-primary dark:text-primary-fixed">Smart Attendance AI</h1>
+</div>
+<div>
+<button class="p-sm text-on-surface-variant hover:bg-surface-container-low transition-all active:opacity-80 rounded-full">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+</div>
+</header>
+<!-- Canvas -->
+<main class="flex-1 p-md md:p-lg max-w-container-max mx-auto w-full overflow-y-auto">
+<div class="mb-lg flex flex-col md:flex-row md:items-end justify-between gap-md">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-sm">Face Registration Process</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Please capture 20 diverse angles for optimal AI recognition.</p>
+</div>
+<!-- Student Info Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center gap-md shadow-sm min-w-[250px]">
+<div class="w-12 h-12 rounded-full bg-surface-container overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A placeholder silhouette graphic representing a generic student avatar in a high-tech interface. Minimalist gray tones on a light background. Clean, corporate aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCscCcFCv628m8JtyAKeBEwq7UZ4DiGahtI12OdXo-6o9P3fraDBNQkJUwzZpjjFKK3JJ1ykAr1fkym_GW9zbxKX8GfHCBIFbObt_wau92Zqx5dS4zgHpVQQojOXs3EkI8qkDsuvLxranilo1_3OhQGRVEzD1dImBhAggEi9s99iYjW1T5TiDW_HwrXOYwBpXoD2tJtwZaX1OHvsL63hUj2aaPbOT3rsHh7eKdI2rMPs_wM4jerEzQPjyomvs5U6wZupvoV9oFNfs08"/>
+</div>
+<div>
+<div class="font-headline-md text-headline-md text-on-surface">Alex Carter</div>
+<div class="font-data-tabular text-data-tabular text-on-surface-variant">ID: STU-2023-0891</div>
+</div>
+</div>
+</div>
+<!-- Bento Layout Container -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-lg h-[calc(100vh-220px)] min-h-[600px]">
+<!-- Left Column: Camera Feed -->
+<div class="lg:col-span-2 flex flex-col gap-md">
+<!-- Webcam Container -->
+<div class="relative bg-inverse-surface rounded-xl flex-1 overflow-hidden shadow-sm flex items-center justify-center border border-outline">
+<!-- Placeholder for actual camera feed -->
+<div class="absolute inset-0 z-0 bg-surface-container-highest">
+<img class="w-full h-full object-cover opacity-80 mix-blend-luminosity" data-alt="A simulated webcam view of a young professional looking directly at the camera. High tech overlay elements. Bright, clear lighting typical of a well-lit office. The image should convey a sense of a digital registration process." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCZK1Y6Mkjpx62XlXFQgZNMXDmgOCUEa-Xc_WGt3yat-HYE83QPG-bYsaleqOeXvVJE5JhxQJaQVMg5bGrw3oXP7dqNbZP3Xl4GaEZ-jJx4hKrS5oxcYhR2dAduVQ_O8Qrn2yCRRBF7vnRhUqsW3wNCchc1rg2TMcYriPbcLAzSUVQkoohVwVOycet3kBRU8_3dOEwdI7RypZ-A8RyEwU2TapRMsJJgPPq0iYvMPpH3zgDtCu1PWBksmBYO1lFFbd9CjRfhcnfZ16ol"/>
+</div>
+<!-- AI Scanning Overlays -->
+<div class="absolute inset-0 z-10 pointer-events-none">
+<div class="w-full h-full relative">
+<div class="absolute top-[20%] left-[30%] right-[30%] bottom-[20%] border-2 border-secondary/50 rounded-full pulse-overlay"></div>
+<div class="absolute top-[20%] left-[30%] right-[30%] bottom-[20%] border border-secondary border-dashed rounded-full"></div>
+<div class="absolute left-0 right-0 h-0.5 bg-secondary scanning-line shadow-[0_0_8px_rgba(0,88,190,0.8)]"></div>
+</div>
+</div>
+<!-- Real-time Status Badge -->
+<div class="absolute top-md right-md z-20">
+<div class="bg-surface-container-lowest/90 backdrop-blur-sm border border-secondary px-md py-sm rounded-full flex items-center gap-sm shadow-sm">
+<div class="w-2 h-2 rounded-full bg-secondary animate-pulse"></div>
+<span class="font-label-md text-label-md text-secondary uppercase tracking-wider">Ready / Face Detected</span>
+</div>
+</div>
+</div>
+<!-- Capture Controls -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md flex items-center justify-between shadow-sm">
+<button class="px-md py-sm rounded-lg border border-outline-variant text-on-surface-variant hover:bg-surface-container-low transition-colors flex items-center gap-sm font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">cameraswitch</span>
+                            Switch Camera
+                        </button>
+<div class="flex gap-md">
+<button class="px-md py-sm rounded-lg border border-outline text-on-surface hover:bg-surface-container-low transition-colors flex items-center gap-sm font-label-md text-label-md">
+<span class="material-symbols-outlined text-[18px]">replay</span>
+                                Retake Last
+                            </button>
+<button class="bg-secondary text-on-secondary px-lg py-md rounded-xl hover:bg-secondary/90 transition-colors flex items-center gap-md font-headline-md text-headline-md shadow-sm">
+<span class="material-symbols-outlined">photo_camera</span>
+                                Capture Image
+                            </button>
+</div>
+</div>
+</div>
+<!-- Right Column: Progress & Gallery -->
+<div class="flex flex-col gap-md">
+<!-- Progress Card -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm">
+<div class="flex justify-between items-end mb-sm">
+<span class="font-headline-md text-headline-md text-on-surface">Registration Progress</span>
+<span class="font-data-tabular text-data-tabular text-secondary font-bold">12 / 20</span>
+</div>
+<div class="w-full bg-surface-container h-2 rounded-full overflow-hidden">
+<div class="bg-secondary h-full rounded-full transition-all duration-500 ease-out" style="width: 60%;"></div>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-sm">Look slightly left for the next capture.</p>
+</div>
+<!-- Preview Gallery -->
+<div class="bg-surface-container-lowest border border-outline-variant rounded-xl p-md shadow-sm flex-1 flex flex-col min-h-0">
+<h3 class="font-headline-md text-headline-md text-on-surface mb-md shrink-0">Captured Angles</h3>
+<div class="flex-1 overflow-y-auto pr-sm custom-scrollbar">
+<div class="grid grid-cols-2 gap-sm">
+<!-- Gallery Items (Simulated 12 captured) -->
+<div class="relative group rounded-lg overflow-hidden border border-outline-variant aspect-square bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A small thumbnail showing a tightly cropped face of a person looking directly forward. Neutral expression. Corporate ID style photo. High key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAYHsrLiloKqlNKEXX8iCMCkv78QJcLKIkYe2_R6ZXAsyVKlAd7HrcFyyJv6t-8cPMNILsQrN6a_38_8wt47FkI9JbaywVLIvJV6HMP9kgprlhJx6w6nTTaqTZSRXe4OSagTCycuQEpqAKZa07H6pfXijKJUFH6ht2q-QpjMXUOCGXpUhd4TQ5yKiz8eDq0I9Ih5y4LJR3ZaMaO9XPmL81wfGwCjjal-jJfTjGjkp0NCB_O75B--gCjHCMmsPhlv6PpuutmgoY86kFP"/>
+<button class="absolute top-xs right-xs bg-error/90 text-on-error w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<div class="relative group rounded-lg overflow-hidden border border-outline-variant aspect-square bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A small thumbnail showing a tightly cropped face of a person looking slightly to the left. Neutral expression. Corporate ID style photo. High key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBwB_mz45XBM3a6j8v-AHXsY9tAMumlAGyTfdU2NAbHd7y6ksGTvnfcTVKFhkpsbVQCw1LlILu7D5U3bcAWHJ_eJkzLVAepisGPhIVkrT044S47GlgkyItYKb9VpiCtI6qqyIIFjo_9QMX6xrqJw5cUFK2P2Kj6kmyHyXXshTOfeTCb7Nzr5SKbfhRdRm7dXknUffIYHhsZR0D4AnSDpeebTYnhlfZBIhEh7Wd7Zj-kya_0GmMIe9_9Y54VKSPx8OhLxfx-5N8iLFrH"/>
+<button class="absolute top-xs right-xs bg-error/90 text-on-error w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<div class="relative group rounded-lg overflow-hidden border border-outline-variant aspect-square bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A small thumbnail showing a tightly cropped face of a person looking slightly to the right. Neutral expression. Corporate ID style photo. High key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC2X_FNatrfnuddqeXMXM50ouu-UAQ6shlRIWj0PAQljgg7X73GwYip89RjIY2atVeOsbJ0SJSJYrEXlrVCDzwufTWcVPv8_nQWPiIR_HkHwA7ApFqP7iw94SvLvWRK5Lj1qn0z3UjsNOlpxWTS1HEXpk-m9PKbVM9ns9cefH6vS8q1Sd4Pw7qoY7NZkdybG9-qMu3oItvar6Lqe7R41z6pc_ei5KII3r-foHUjZM5ritbStWqnBv3F19b5JwMDWGk611_kgAcdj_CE"/>
+<button class="absolute top-xs right-xs bg-error/90 text-on-error w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<div class="relative group rounded-lg overflow-hidden border border-outline-variant aspect-square bg-surface-container">
+<img class="w-full h-full object-cover" data-alt="A small thumbnail showing a tightly cropped face of a person looking slightly up. Neutral expression. Corporate ID style photo. High key lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA8neNVpTf6EPwDTiPrRTtrxorV3g7D81j10Ut3bdnVL5cbzWoLSGWC6x2iuneVIFwnl4H2i0K7x0v6sOwPDS_wtgSs4uotxaUeMD1Q94icv-Pm6qiPGv5MYbrm__D0AMjJ1Zf6dsSe7b3USVFruovy7q7iwEj0rgAUB5h8sw-OqreneX6G8O9d9mkMeHCo5h4qcgfFqygbm44VV00kkMjZgHC1RyYaSe1x36iX6dJ5JR1QMim8GIeVQQa_fIqQOCiYEApxh3SneFbt"/>
+<button class="absolute top-xs right-xs bg-error/90 text-on-error w-6 h-6 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+<span class="material-symbols-outlined text-[14px]">close</span>
+</button>
+</div>
+<!-- Empty Slots -->
+<div class="rounded-lg border border-dashed border-outline-variant aspect-square bg-surface-container-low flex items-center justify-center">
+<span class="font-label-md text-label-md text-on-surface-variant/50">Empty</span>
+</div>
+<div class="rounded-lg border border-dashed border-outline-variant aspect-square bg-surface-container-low flex items-center justify-center">
+<span class="font-label-md text-label-md text-on-surface-variant/50">Empty</span>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="mt-md pt-md border-t border-outline-variant shrink-0">
+<button class="w-full bg-surface-container text-on-surface-variant px-lg py-md rounded-xl flex items-center justify-center gap-sm font-headline-md text-headline-md cursor-not-allowed opacity-50">
+<span class="material-symbols-outlined">check_circle</span>
+                                Finalize Registration
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+<style>
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: #e4e2e4;
+            border-radius: 10px;
+        }
+    </style>
+</body></html>

@@ -1,0 +1,68 @@
+{% macro nav_link(endpoint, icon, label) %}
+<a href="{{ url_for(endpoint) }}"
+   class="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors
+          {% if request.endpoint == endpoint %}bg-blue-600 text-white{% else %}text-slate-300 hover:bg-slate-800 hover:text-white{% endif %}">
+  <span class="material-symbols-outlined text-lg">{{ icon }}</span>
+  {{ label }}
+</a>
+{% endmacro %}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block page_title %}Smart Attendance AI{% endblock %}</title>
+  <script src="https://cdn.tailwindcss.com?plugins=forms"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}">
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-slate-50 text-slate-900 min-h-screen font-sans">
+  <div class="flex min-h-screen">
+    <aside class="hidden md:flex w-72 bg-slate-900 text-white flex-col p-6">
+      <div class="mb-8">
+        <h1 class="text-lg font-bold">Smart Attendance AI</h1>
+        <p class="text-xs text-slate-400">Admin Console</p>
+      </div>
+      <nav class="space-y-1 flex-1">
+        {{ nav_link('admin.dashboard', 'dashboard', 'Dashboard') }}
+        {{ nav_link('student.list_students', 'group', 'Students') }}
+        {{ nav_link('recognition.live_feed', 'videocam', 'Live Attendance') }}
+        {{ nav_link('analytics.reports', 'assessment', 'Reports') }}
+      </nav>
+      <a href="{{ url_for('admin.logout') }}" class="flex items-center gap-2 text-sm text-slate-300 hover:text-white mt-4">
+        <span class="material-symbols-outlined text-lg">logout</span>
+        Logout
+      </a>
+    </aside>
+
+    <main class="flex-1">
+      <header class="bg-white border-b border-slate-200 px-6 py-4 flex items-center justify-between sticky top-0 z-10">
+        <div>
+          <h2 class="text-xl font-semibold">{% block header %}{% endblock %}</h2>
+          <p class="text-sm text-slate-500">{% block subheader %}{% endblock %}</p>
+        </div>
+        <div class="md:hidden">
+          <a href="{{ url_for('admin.logout') }}" class="text-sm text-blue-600">Logout</a>
+        </div>
+      </header>
+
+      <div class="p-6">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <div class="mb-4 p-3 rounded-lg text-sm {% if category == 'error' %}bg-red-50 text-red-700{% elif category == 'success' %}bg-emerald-50 text-emerald-700{% else %}bg-blue-50 text-blue-700{% endif %}">
+                {{ message }}
+              </div>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+      </div>
+    </main>
+  </div>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

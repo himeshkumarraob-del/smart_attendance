@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Login | Smart Attendance AI</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-dim": "#dcd9db",
+                        "on-secondary-fixed-variant": "#004395",
+                        "inverse-on-surface": "#f3f0f2",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-lowest": "#ffffff",
+                        "error": "#ba1a1a",
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-tint": "#565e74",
+                        "on-tertiary": "#ffffff",
+                        "on-primary-fixed": "#131b2e",
+                        "outline": "#76777d",
+                        "background": "#fcf8fa",
+                        "surface-container-high": "#eae7e9",
+                        "on-primary-container": "#7c839b",
+                        "surface-bright": "#fcf8fa",
+                        "on-secondary-container": "#fefcff",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "on-error": "#ffffff",
+                        "surface-container-low": "#f6f3f5",
+                        "secondary-container": "#2170e4",
+                        "primary-container": "#131b2e",
+                        "surface-variant": "#e4e2e4",
+                        "tertiary-container": "#271901",
+                        "on-tertiary-fixed": "#271901",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "on-background": "#1b1b1d",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-secondary": "#ffffff",
+                        "primary-fixed": "#dae2fd",
+                        "on-primary": "#ffffff",
+                        "secondary": "#0058be",
+                        "error-container": "#ffdad6",
+                        "on-tertiary-container": "#98805d",
+                        "on-surface-variant": "#45464d",
+                        "secondary-fixed": "#d8e2ff",
+                        "outline-variant": "#c6c6cd",
+                        "on-error-container": "#93000a",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary": "#000000",
+                        "secondary-fixed-dim": "#adc6ff",
+                        "primary": "#000000",
+                        "on-surface": "#1b1b1d",
+                        "surface": "#fcf8fa",
+                        "on-secondary-fixed": "#001a42",
+                        "surface-container": "#f0edef",
+                        "inverse-surface": "#303032",
+                        "on-tertiary-fixed-variant": "#574425"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "container-max": "1440px",
+                        "lg": "24px",
+                        "xs": "4px",
+                        "md": "16px",
+                        "xl": "32px",
+                        "sm": "8px",
+                        "sidebar-width": "280px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Inter"],
+                        "headline-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["30px", {"lineHeight": "38px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "headline-md": ["20px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #fcf8fa;
+        }
+        .login-card {
+            box-shadow: 0 10px 15px -3px rgba(15, 23, 42, 0.12);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        input:focus {
+            outline: none;
+            border-color: #0058be !important;
+            box-shadow: 0 0 0 2px rgba(0, 88, 190, 0.1);
+        }
+    </style>
+<style>
+    body {
+      min-height: max(884px, 100dvh);
+    }
+  </style>
+  </head>
+<body class="flex items-center justify-center min-h-screen p-md bg-background overflow-hidden relative">
+<!-- Atmospheric Subtle Background Decoration -->
+<div class="absolute inset-0 pointer-events-none opacity-30">
+<div class="absolute top-[-10%] right-[-5%] w-[400px] h-[400px] bg-secondary-fixed rounded-full blur-[100px]"></div>
+<div class="absolute bottom-[-10%] left-[-5%] w-[400px] h-[400px] bg-primary-fixed rounded-full blur-[100px]"></div>
+</div>
+<main class="relative z-10 w-full max-w-[440px]">
+<!-- Login Card -->
+<div class="login-card bg-surface-container-lowest border border-outline-variant p-xl rounded-xl">
+<!-- Logo and Header -->
+<div class="text-center mb-xl">
+<div class="inline-flex items-center justify-center w-16 h-16 bg-primary rounded-full mb-md text-white shadow-lg">
+<span class="material-symbols-outlined text-[32px]">face</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-primary mb-xs">Smart Attendance AI</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">Administrative Secure Portal</p>
+</div>
+<!-- Login Form -->
+<form class="space-y-lg" id="loginForm">
+<!-- Username Field -->
+<div class="space-y-xs">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider" for="username">Username</label>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none text-on-surface-variant group-focus-within:text-secondary">
+<span class="material-symbols-outlined">person</span>
+</div>
+<input class="w-full pl-[48px] pr-md py-md bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md transition-all placeholder:text-outline/60" id="username" name="username" placeholder="Enter your admin ID" required="" type="text"/>
+</div>
+</div>
+<!-- Password Field -->
+<div class="space-y-xs">
+<div class="flex justify-between items-center">
+<label class="font-label-md text-label-md text-on-surface uppercase tracking-wider" for="password">Password</label>
+</div>
+<div class="relative group">
+<div class="absolute inset-y-0 left-0 pl-md flex items-center pointer-events-none text-on-surface-variant group-focus-within:text-secondary">
+<span class="material-symbols-outlined">lock</span>
+</div>
+<input class="w-full pl-[48px] pr-md py-md bg-surface-container-low border border-outline-variant rounded-lg font-body-md text-body-md transition-all placeholder:text-outline/60" id="password" name="password" placeholder="••••••••" required="" type="password"/>
+<button class="absolute inset-y-0 right-0 pr-md flex items-center text-on-surface-variant hover:text-primary transition-colors" onclick="togglePassword()" type="button">
+<span class="material-symbols-outlined" id="eyeIcon">visibility</span>
+</button>
+</div>
+</div>
+<!-- Error Message Placeholder (Hidden by default) -->
+<div class="hidden flex items-center gap-sm p-md bg-error-container text-on-error-container border border-error/20 rounded-lg animate-pulse" id="errorMessage">
+<span class="material-symbols-outlined text-[20px]">error</span>
+<p class="font-label-md text-label-md">Invalid credentials. Please verify and try again.</p>
+</div>
+<!-- Remember Me / Forgot -->
+<div class="flex items-center justify-between py-xs">
+<label class="flex items-center gap-sm cursor-pointer group">
+<input class="w-4 h-4 rounded border-outline-variant text-secondary focus:ring-secondary/20" type="checkbox"/>
+<span class="font-label-md text-label-md text-on-surface-variant group-hover:text-primary">Remember me</span>
+</label>
+<a class="font-label-md text-label-md text-secondary hover:underline transition-all" href="#">Forgot Password?</a>
+</div>
+<!-- Submit Button -->
+<button class="w-full py-md bg-primary text-white font-headline-md text-headline-md rounded-lg hover:bg-secondary active:scale-[0.98] transition-all duration-200 flex items-center justify-center gap-sm shadow-md" type="submit">
+                    Sign In
+                    <span class="material-symbols-outlined">arrow_forward</span>
+</button>
+</form>
+<!-- Footer Message -->
+<div class="mt-xl pt-lg border-t border-outline-variant text-center">
+<p class="font-label-md text-label-md text-on-surface-variant mb-md">
+                    Secured by AI-Powered Biometrics
+                </p>
+<div class="flex justify-center gap-md grayscale opacity-50 hover:grayscale-0 hover:opacity-100 transition-all">
+<img class="h-6 w-auto" data-alt="A clean, minimalist logo of a modern tech security firm, stylized in deep navy blue and slate gray. The logo features a geometric shield icon combined with digital circuit patterns, symbolizing high-level encryption and secure artificial intelligence systems in a professional corporate context." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBOMBCqbVoeQ5IIpWzDEZr_4RhtVLhkJM82kd4866BEoBWOL3Tt4Q1P3Rd-WjjFIM18P6WBHhuANmB1SR9A8prJr8MFB45VrX1ntfaQv6DjOYl5Q6ANWgq95fJR1Ld5wIhuCL1PuHtxFVhQT3WJoUSx9BWYPq-tz37RfHYSljajDV0_IykYeD1whoHTYPr0jQhEJUvdjj1Eq3yBkVfJnX8dmkV2B8hAinPf_AaxXvPj6aSr9NLfDAh4f2h6iU0L3rzUN9ih-OQYUdvI"/>
+</div>
+</div>
+</div>
+<!-- Technical Footer -->
+<footer class="mt-lg text-center">
+<p class="font-label-md text-label-md text-on-surface-variant">
+                © 2024 Smart Attendance AI v2.4.0 <br/>
+<span class="opacity-60">System Status: </span>
+<span class="inline-block w-2 h-2 rounded-full bg-emerald-500 mr-1"></span>
+<span class="text-emerald-600 font-bold">Operational</span>
+</p>
+</footer>
+</main>
+<script>
+        // Micro-interactions and simple logic
+        const loginForm = document.getElementById('loginForm');
+        const errorMessage = document.getElementById('errorMessage');
+        const eyeIcon = document.getElementById('eyeIcon');
+        const passwordInput = document.getElementById('password');
+
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            // Simulate validation check
+            const username = document.getElementById('username').value;
+            
+            // Just for visual demonstration of the error state
+            if (username.toLowerCase() === 'error') {
+                errorMessage.classList.remove('hidden');
+            } else {
+                errorMessage.classList.add('hidden');
+                const btn = e.target.querySelector('button[type="submit"]');
+                btn.innerHTML = '<span class="animate-spin material-symbols-outlined">progress_activity</span> Authenticating...';
+                btn.classList.add('opacity-80', 'pointer-events-none');
+                
+                setTimeout(() => {
+                    alert('Authentication successful. Redirecting to Dashboard...');
+                    window.location.reload();
+                }, 1500);
+            }
+        });
+
+        function togglePassword() {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                eyeIcon.innerText = 'visibility_off';
+            } else {
+                passwordInput.type = 'password';
+                eyeIcon.innerText = 'visibility';
+            }
+        }
+
+        // Add subtle floating effect to card
+        document.addEventListener('mousemove', (e) => {
+            const card = document.querySelector('.login-card');
+            const xAxis = (window.innerWidth / 2 - e.pageX) / 50;
+            const yAxis = (window.innerHeight / 2 - e.pageY) / 50;
+            card.style.transform = `rotateY(${xAxis}deg) rotateX(${yAxis}deg)`;
+        });
+    </script>
+</body></html>

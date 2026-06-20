@@ -1,0 +1,49 @@
+{% extends 'layouts/dashboard.html' %}
+{% block page_title %}Live Attendance | Smart Attendance AI{% endblock %}
+{% block header %}Live Attendance Recognition{% endblock %}
+{% block subheader %}Automatic face matching and attendance marking{% endblock %}
+
+{% block head %}
+<style>
+  #cameraWrap { position: relative; }
+  #overlay { position: absolute; inset: 0; pointer-events: none; }
+  #video { width: 100%; border-radius: 0.75rem; background: #0f172a; }
+  .match-box { position: absolute; border: 2px solid #10b981; border-radius: 0.25rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+  <div class="xl:col-span-2 bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <div class="relative aspect-video bg-slate-900 rounded-xl overflow-hidden" id="cameraWrap">
+      <video id="video" autoplay playsinline muted class="w-full h-full object-cover"></video>
+      <div id="overlay"></div>
+    </div>
+    <div class="flex flex-wrap gap-3 mt-4">
+      <button id="startBtn" type="button" class="px-4 py-2 bg-blue-600 text-white rounded-lg">Start Scanning</button>
+      <button id="stopBtn" type="button" class="px-4 py-2 border border-slate-200 rounded-lg" disabled>Stop</button>
+      <button id="retrainBtn" type="button" class="px-4 py-2 border border-slate-200 rounded-lg">Retrain Model</button>
+    </div>
+    <p id="scanStatus" class="text-sm text-slate-500 mt-3">Camera idle.</p>
+  </div>
+
+  <div class="bg-white rounded-xl border border-slate-200 p-5 shadow-sm">
+    <h3 class="font-semibold mb-4">Latest Match</h3>
+    <div id="matchPanel" class="text-sm text-slate-500">Waiting for a recognized face...</div>
+    <div class="mt-6">
+      <h4 class="font-medium mb-2">Session Log</h4>
+      <ul id="sessionLog" class="space-y-2 text-sm max-h-80 overflow-y-auto"></ul>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  window.LIVE_FEED = {
+    processUrl: "{{ url_for('recognition.process_frame') }}",
+    retrainUrl: "{{ url_for('recognition.retrain') }}"
+  };
+</script>
+<script src="{{ url_for('static', filename='js/live_feed.js') }}"></script>
+{% endblock %}
